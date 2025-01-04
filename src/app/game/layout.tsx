@@ -10,7 +10,7 @@ export default function GameLayout({
       <aside>
         <GameNavigation />
       </aside>
-      <div className="tw-p-6">{children}</div>
+      <div className="tw-p-4">{children}</div>
     </div>
   );
 }
