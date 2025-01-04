@@ -5,7 +5,13 @@ interface FleetStore {
   ships: Ship[];
   selectedShipId: string | null;
 
-  addShip: (name: string) => Ship;
+  addShip: ({
+    name,
+    stationId,
+  }: {
+    name: string;
+    stationId: string | null;
+  }) => Ship;
   selectShip: (id: string) => void;
   getSelectedShip: () => Ship | null;
 }
@@ -14,11 +20,18 @@ export const useFleetStore = create<FleetStore>((set, get) => ({
   ships: [],
   selectedShipId: null,
 
-  addShip: (name: string) => {
+  addShip: ({
+    name,
+    stationId = null,
+  }: {
+    name: string;
+    stationId: string | null;
+  }) => {
     const ship: Ship = {
       id: `ship-${Date.now()}`,
       name,
       status: ShipStatus.Idle,
+      stationId,
     };
 
     set((state) => ({ ...state, ships: [...state.ships, ship] }));

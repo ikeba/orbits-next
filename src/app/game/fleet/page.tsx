@@ -1,51 +1,62 @@
 "use client";
 
 import Subheader from "@/components/shared/Subheader";
-import Button from "@/components/shared/Button";
+import UiButton from "@/components/shared/UiButton";
 import FlexWrap from "@/components/shared/FlexWrap";
 import { useFleetStore } from "@/stores/fleet.store";
-import { useEffect } from "react";
+import { useMemo } from "react";
+import UiList from "@/components/shared/UiList";
+import ShipDetails from "@/components/game/fleet/ShipDetails";
+import { useStationsStore } from "@/stores/stations.store";
 
 export default function Fleet() {
   const { ships, addShip, selectShip, getSelectedShip } = useFleetStore();
+  const { stations } = useStationsStore();
 
-  useEffect(() => {
-    if (ships.length === 0) {
-      addShip("Ship 1");
-    }
-  }, []);
+  // useEffect(() => {
+  //   if (ships.length === 0) {
+  //     addShip("Ship 1");
+  //   }
+  // }, []);
 
   const handleAddShip = () => {
-    addShip(`Ship ${ships.length + 1}`);
+    const ship = addShip({
+      name: `Ship ${ships.length + 1}`,
+      stationId: stations[0].id,
+    });
+    selectShip(ship.id);
   };
 
   const handleSelectShip = (id: string) => {
     selectShip(id);
   };
 
+  const normalizedShips = useMemo(
+    () =>
+      ships.map((ship) => ({
+        id: ship.id,
+        label: ship.name,
+      })),
+    [ships]
+  );
+
+  const selectedShip = getSelectedShip();
+
   return (
     <div className="tw-h-full">
       <Subheader>
         <h1>Fleet</h1>
-        <Button onClick={handleAddShip}>Add Ship</Button>
+        <UiButton onClick={handleAddShip}>Add Ship</UiButton>
       </Subheader>
       <FlexWrap direction="row" className="tw-h-full">
-        <FlexWrap
-          direction="column"
+        <UiList
+          bordered
+          items={normalizedShips}
+          onItemClick={handleSelectShip}
           className="tw-h-full tw-w-1/4 tw-border-r tw-border-white"
-        >
-          {ships.map((ship) => (
-            <div
-              className="tw-w-full tw-p-4 tw-border-b tw-border-white tw-cursor-pointer hover:tw-bg-white/20"
-              key={ship.id}
-              onClick={() => handleSelectShip(ship.id)}
-            >
-              {ship.name}
-            </div>
-          ))}
-        </FlexWrap>
+        />
         <div className="tw-w-3/4 tw-h-full tw-p-4">
-          <div>{getSelectedShip()?.name}</div>
+          {selectedShip && <ShipDetails ship={selectedShip} />}
         </div>
       </FlexWrap>
     </div>

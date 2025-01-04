@@ -6,7 +6,7 @@ export default function Subheader({ children }: { children: React.ReactNode }) {
       direction="row"
       justify="space-between"
       align="center"
-      className="tw-border-b tw-border-white tw-py-2 tw-px-4"
+      className="tw-border-b tw-border-white tw-py-2 tw-px-4 tw-min-h-[51px]"
     >
       {children}
     </FlexWrap>
