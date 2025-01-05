@@ -55,7 +55,7 @@ export default function Fleet() {
           onItemClick={handleSelectShip}
           className="tw-h-full tw-w-1/4 tw-border-r tw-border-white"
         />
-        <div className="tw-w-3/4 tw-h-full tw-p-4">
+        <div className="tw-w-3/4 tw-h-full">
           {selectedShip && <ShipDetails ship={selectedShip} />}
         </div>
       </FlexWrap>

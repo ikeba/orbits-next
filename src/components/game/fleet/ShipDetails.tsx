@@ -2,16 +2,23 @@ import UiButton from "@/components/shared/UiButton";
 import FlexWrap from "@/components/shared/FlexWrap";
 import { Ship } from "@/types/Ship";
 import { useStationsStore } from "@/stores/stations.store";
+import { useTravelStore } from "@/stores/travel.store";
 
 export default function ShipDetails({ ship }: { ship: Ship }) {
-  const { getStationById } = useStationsStore();
+  const { stations, getStationById } = useStationsStore();
+  const { addTravel } = useTravelStore();
 
   const moveToStation = () => {
-    console.log("moveToStation");
+    addTravel({
+      shipId: ship.id,
+      fromId: ship.stationId,
+      toId: stations[1].id,
+      speed: 1,
+    });
   };
 
   return (
-    <div>
+    <div className="tw-p-4">
       <FlexWrap direction="column">
         <b>{ship.name}</b>
         <p>Status: {ship.status}</p>
