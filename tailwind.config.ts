@@ -1,4 +1,5 @@
 import type { Config } from "tailwindcss";
+import tailwindPresetMantine from "tailwind-preset-mantine";
 
 export default {
   prefix: "tw-",
@@ -16,4 +17,5 @@ export default {
     },
   },
   plugins: [],
+  presets: [tailwindPresetMantine],
 } satisfies Config;

@@ -1,6 +1,18 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@layer tw-base, mantine, mantine-datatable, tw-components, tw-utilities;
+
+@layer tw-base {
+  @tailwind base;
+}
+
+@layer tw-components {
+  @tailwind components;
+}
+
+@layer tw-utilities {
+  @tailwind utilities;
+}
+
+/* @import "@mantine/core/styles.layer.css"; */
 
 :root {
   --background: #0a0a0a;

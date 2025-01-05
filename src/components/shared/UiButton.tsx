@@ -1,16 +1,17 @@
+import { Button } from "@mantine/core";
+
 export default function UiButton({
   children,
   onClick,
+  variant = "outline",
 }: {
   children: React.ReactNode;
   onClick: () => void;
+  variant?: "default" | "outline" | "light" | "filled";
 }) {
   return (
-    <button
-      className="tw-px-2 tw-py-1 tw-rounded-md tw-border tw-border-white hover:tw-opacity-80"
-      onClick={onClick}
-    >
+    <Button onClick={onClick} variant={variant}>
       {children}
-    </button>
+    </Button>
   );
 }
