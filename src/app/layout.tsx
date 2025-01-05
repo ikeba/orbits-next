@@ -43,11 +43,11 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased tw-min-h-screen tw-font-[family-name:var(--font-geist-sans)] tw-grid tw-grid-rows-[auto_1fr_auto]`}
       >
-        <Header />
         <MantineProvider theme={theme} defaultColorScheme="dark">
+          <Header />
           <main>{children}</main>
+          <Footer />
         </MantineProvider>
-        <Footer />
       </body>
     </html>
   );

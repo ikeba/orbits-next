@@ -1,8 +1,10 @@
 "use client";
 
 import GameNavigation from "@/components/game/GameNavigation";
+
 import { useEffect } from "react";
 import { useTimeStore } from "@/stores/time.store";
+import { useGameSave } from "@/hooks/useSaveLoad";
 
 export default function GameLayout({
   children,
@@ -10,9 +12,13 @@ export default function GameLayout({
   children: React.ReactNode;
 }) {
   const { start, pause } = useTimeStore();
+  const { loadGame } = useGameSave();
 
   useEffect(() => {
+    // start the game loop
     start();
+    // load the game on initial load
+    loadGame();
 
     return () => {
       pause();

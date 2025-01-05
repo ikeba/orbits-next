@@ -1,13 +1,13 @@
 "use client";
 
 import Subheader from "@/components/shared/Subheader";
-import UiButton from "@/components/shared/UiButton";
 import FlexWrap from "@/components/shared/FlexWrap";
 import { useFleetStore } from "@/stores/fleet.store";
 import { useMemo } from "react";
 import UiList from "@/components/shared/UiList";
 import ShipDetails from "@/components/game/fleet/ShipDetails";
 import { useStationsStore } from "@/stores/stations.store";
+import { Button } from "@mantine/core";
 
 export default function Fleet() {
   const { ships, addShip, selectShip, getSelectedShip } = useFleetStore();
@@ -46,7 +46,7 @@ export default function Fleet() {
     <div className="tw-h-full">
       <Subheader>
         <h1>Fleet</h1>
-        <UiButton onClick={handleAddShip}>Add Ship</UiButton>
+        <Button onClick={handleAddShip}>Add Ship</Button>
       </Subheader>
       <FlexWrap direction="row" className="tw-h-full">
         <UiList
