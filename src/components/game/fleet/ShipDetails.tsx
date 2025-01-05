@@ -11,7 +11,7 @@ export default function ShipDetails({ ship }: { ship: Ship }) {
   const moveToStation = () => {
     addTravel({
       shipId: ship.id,
-      fromId: ship.stationId,
+      fromId: ship.positionId,
       toId: stations[1].id,
       speed: 1,
     });
@@ -22,8 +22,8 @@ export default function ShipDetails({ ship }: { ship: Ship }) {
       <FlexWrap direction="column">
         <b>{ship.name}</b>
         <p>Status: {ship.status}</p>
-        {ship.stationId && (
-          <p>Station: {getStationById(ship.stationId)?.name}</p>
+        {ship.positionId && (
+          <p>Station: {getStationById(ship.positionId)?.name}</p>
         )}
         <UiButton onClick={moveToStation}>Move to the next station</UiButton>
       </FlexWrap>

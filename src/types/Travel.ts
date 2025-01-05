@@ -1,4 +1,5 @@
 export enum TravelStatus {
+  Pending = "pending",
   InProgress = "in_progress",
   Completed = "completed",
 }

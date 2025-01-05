@@ -7,5 +7,5 @@ export interface Ship {
   id: string;
   name: string;
   status: ShipStatus;
-  stationId: string | null;
+  positionId: string | null;
 }

@@ -22,7 +22,7 @@ export default function Fleet() {
   const handleAddShip = () => {
     const ship = addShip({
       name: `Ship ${ships.length + 1}`,
-      stationId: stations[0].id,
+      positionId: stations[0].id,
     });
     selectShip(ship.id);
   };

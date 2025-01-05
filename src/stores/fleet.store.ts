@@ -7,13 +7,15 @@ interface FleetStore {
 
   addShip: ({
     name,
-    stationId,
+    positionId,
   }: {
     name: string;
-    stationId: string | null;
+    positionId: string | null;
   }) => Ship;
   selectShip: (id: string) => void;
   getSelectedShip: () => Ship | null;
+  updateShipPosition: (shipId: string, positionId: string | null) => void;
+  updateShipStatus: (shipId: string, status: ShipStatus) => void;
 }
 
 export const useFleetStore = create<FleetStore>((set, get) => ({
@@ -22,16 +24,16 @@ export const useFleetStore = create<FleetStore>((set, get) => ({
 
   addShip: ({
     name,
-    stationId = null,
+    positionId = null,
   }: {
     name: string;
-    stationId: string | null;
+    positionId: string | null;
   }) => {
     const ship: Ship = {
       id: `ship-${Date.now()}`,
       name,
       status: ShipStatus.Idle,
-      stationId,
+      positionId,
     };
 
     set((state) => ({ ...state, ships: [...state.ships, ship] }));
@@ -45,5 +47,23 @@ export const useFleetStore = create<FleetStore>((set, get) => ({
 
   getSelectedShip: () => {
     return get().ships.find((ship) => ship.id === get().selectedShipId) || null;
+  },
+
+  updateShipStatus: (shipId: string, status: ShipStatus) => {
+    set((state) => ({
+      ...state,
+      ships: state.ships.map((ship) =>
+        ship.id === shipId ? { ...ship, status } : ship
+      ),
+    }));
+  },
+
+  updateShipPosition: (shipId: string, positionId: string | null) => {
+    set((state) => ({
+      ...state,
+      ships: state.ships.map((ship) =>
+        ship.id === shipId ? { ...ship, positionId } : ship
+      ),
+    }));
   },
 }));
