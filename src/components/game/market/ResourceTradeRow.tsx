@@ -8,6 +8,7 @@ interface ResourceTradeRowProps {
   destinationAmount: number;
   sellPrice: number;
   buyPrice: number;
+  disabled: boolean;
   onTransferToSource: (amount: number) => void;
   onTransferToDestination: (amount: number) => void;
 }
@@ -18,6 +19,7 @@ export default function ResourceTradeRow({
   destinationAmount,
   sellPrice,
   buyPrice,
+  disabled,
   onTransferToSource,
   onTransferToDestination,
 }: ResourceTradeRowProps) {
@@ -27,7 +29,7 @@ export default function ResourceTradeRow({
       <Button
         leftSection={<IconCaretLeftFilled />}
         onClick={() => onTransferToSource(1)}
-        disabled={destinationAmount === 0}
+        disabled={disabled || destinationAmount === 0}
       >
         {sellPrice}
       </Button>
@@ -35,7 +37,7 @@ export default function ResourceTradeRow({
       <Button
         rightSection={<IconCaretRightFilled />}
         onClick={() => onTransferToDestination(1)}
-        disabled={sourceAmount === 0}
+        disabled={disabled || sourceAmount === 0}
       >
         {buyPrice}
       </Button>

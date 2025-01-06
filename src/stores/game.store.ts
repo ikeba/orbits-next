@@ -1,17 +1,20 @@
 import { create } from "zustand";
 import { gameLoop } from "@/services/game-loop";
+import { GameScenario } from "@/types/Scenario";
 
-interface TimeState {
+interface GameState {
   tick: number;
   isRunning: boolean;
   speed: number;
+  scenario: GameScenario | null;
 
   start: () => void;
   pause: () => void;
   setSpeed: (speed: number) => void;
+  setScenario: (scenario: GameScenario) => void;
 }
 
-export const useTimeStore = create<TimeState>((set, get) => {
+export const useGameStore = create<GameState>((set, get) => {
   const timeSystem = (delta: number) => {
     const { speed } = get();
     set((state) => ({
@@ -35,13 +38,18 @@ export const useTimeStore = create<TimeState>((set, get) => {
     set({ speed });
   };
 
+  const setScenario = (scenario: GameScenario) => {
+    set({ scenario });
+  };
+
   return {
     tick: 0,
     isRunning: true,
     speed: 1,
-
+    scenario: null,
     start,
     pause,
     setSpeed,
+    setScenario,
   };
 });

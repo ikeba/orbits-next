@@ -1,9 +1,9 @@
 "use client";
 
-import { useTimeStore } from "@/stores/time.store";
+import { useGameStore } from "@/stores/game.store";
 
 export default function Clock() {
-  const { tick } = useTimeStore();
+  const { tick } = useGameStore();
 
   return <div>{Math.floor(tick)}</div>;
 }

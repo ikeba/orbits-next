@@ -76,6 +76,7 @@ export default function Market({ source, destination }: MarketProps) {
             onTransferToDestination={(amount) =>
               handleTransferToDestination(resource.name, amount)
             }
+            disabled={!destination}
           />
         ))}
       </div>

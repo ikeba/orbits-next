@@ -50,10 +50,10 @@ export default function Map() {
           className="tw-h-full tw-w-1/4 tw-border-r tw-border-white"
         />
         <div className="tw-h-full tw-w-3/4">
-          {selectedStation && dockedShips.length ? (
-            <Market source={selectedStation} destination={dockedShips[0]} />
+          {selectedStation ? (
+            <Market source={selectedStation} destination={dockedShips?.[0]} />
           ) : (
-            <div>No ships docked</div>
+            <div>Select a station</div>
           )}
         </div>
       </FlexWrap>
