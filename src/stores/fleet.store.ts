@@ -1,5 +1,8 @@
 import { create } from "zustand";
-import { Ship, ShipStatus } from "@/types/Ship";
+import { Ship, ShipResources, ShipStatus } from "@/types/Ship";
+import { ResourceName } from "@/types/Resource";
+
+const DEFAULT_CARGO_SIZE = 1000;
 
 interface FleetStore {
   ships: Ship[];
@@ -14,9 +17,25 @@ interface FleetStore {
   }) => Ship;
   selectShip: (id: string) => void;
   getSelectedShip: () => Ship | null;
-  updateShipPosition: (shipId: string, positionId: string | null) => void;
-  updateShipStatus: (shipId: string, status: ShipStatus) => void;
+  setShipPosition: (shipId: string, positionId: string | null) => void;
+  setShipStatus: (shipId: string, status: ShipStatus) => void;
+  setShipTravelId: (shipId: string, travelId: string | null) => void;
+  setShipCargo: (
+    shipId: Ship["id"],
+    resourceName: ResourceName,
+    newAmount: number
+  ) => void;
 }
+
+export const createEmptyResources = (): ShipResources => {
+  return Object.values(ResourceName).reduce(
+    (acc, resourceName) => ({
+      ...acc,
+      [resourceName]: { amount: 0 },
+    }),
+    {} as ShipResources
+  );
+};
 
 export const useFleetStore = create<FleetStore>((set, get) => ({
   ships: [],
@@ -32,8 +51,11 @@ export const useFleetStore = create<FleetStore>((set, get) => ({
     const ship: Ship = {
       id: `ship-${Date.now()}`,
       name,
+      cargoSize: DEFAULT_CARGO_SIZE,
       status: ShipStatus.Idle,
       positionId,
+      travelId: null,
+      resources: createEmptyResources(),
     };
 
     set((state) => ({ ...state, ships: [...state.ships, ship] }));
@@ -49,7 +71,7 @@ export const useFleetStore = create<FleetStore>((set, get) => ({
     return get().ships.find((ship) => ship.id === get().selectedShipId) || null;
   },
 
-  updateShipStatus: (shipId: string, status: ShipStatus) => {
+  setShipStatus: (shipId: string, status: ShipStatus) => {
     set((state) => ({
       ...state,
       ships: state.ships.map((ship) =>
@@ -58,11 +80,41 @@ export const useFleetStore = create<FleetStore>((set, get) => ({
     }));
   },
 
-  updateShipPosition: (shipId: string, positionId: string | null) => {
+  setShipPosition: (shipId: string, positionId: string | null) => {
     set((state) => ({
       ...state,
       ships: state.ships.map((ship) =>
         ship.id === shipId ? { ...ship, positionId } : ship
+      ),
+    }));
+  },
+
+  setShipTravelId: (shipId: string, travelId: string | null) => {
+    set((state) => ({
+      ...state,
+      ships: state.ships.map((ship) =>
+        ship.id === shipId ? { ...ship, travelId } : ship
+      ),
+    }));
+  },
+
+  setShipCargo: (
+    shipId: Ship["id"],
+    resourceName: ResourceName,
+    newAmount: number
+  ) => {
+    set((state) => ({
+      ...state,
+      ships: state.ships.map((ship) =>
+        ship.id === shipId
+          ? {
+              ...ship,
+              resources: {
+                ...ship.resources,
+                [resourceName]: { amount: newAmount },
+              },
+            }
+          : ship
       ),
     }));
   },

@@ -52,10 +52,11 @@ export const useTravelStore = create<TravelState>()((set, get) => {
     travels.forEach((travel) => {
       if (travel.status === TravelStatus.Pending) {
         travel.status = TravelStatus.InProgress;
-        useFleetStore.getState().updateShipPosition(travel.shipId, null);
+        useFleetStore.getState().setShipPosition(travel.shipId, null);
         useFleetStore
           .getState()
-          .updateShipStatus(travel.shipId, ShipStatus.Moving);
+          .setShipStatus(travel.shipId, ShipStatus.Moving);
+        useFleetStore.getState().setShipTravelId(travel.shipId, travel.id);
         console.log(`Travel ${travel.id} started`);
       }
 
@@ -69,10 +70,9 @@ export const useTravelStore = create<TravelState>()((set, get) => {
       if (travel.coveredDistance >= travel.distance) {
         travel.status = TravelStatus.Completed;
         console.log(`Travel ${travel.id} completed`);
-        useFleetStore.getState().updateShipPosition(travel.shipId, travel.toId);
-        useFleetStore
-          .getState()
-          .updateShipStatus(travel.shipId, ShipStatus.Idle);
+        useFleetStore.getState().setShipPosition(travel.shipId, travel.toId);
+        useFleetStore.getState().setShipStatus(travel.shipId, ShipStatus.Idle);
+        useFleetStore.getState().setShipTravelId(travel.shipId, null);
         set((state) => ({
           travels: state.travels.filter((t) => t.id !== travel.id),
           archivedTravels: [...state.archivedTravels, travel],

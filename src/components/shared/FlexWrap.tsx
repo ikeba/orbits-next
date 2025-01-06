@@ -11,6 +11,7 @@ interface FlexWrapProps {
     | "space-evenly";
   align?: "start" | "end" | "center" | "stretch" | "baseline";
   wrap?: "wrap" | "nowrap" | "wrap-reverse";
+  onClick?: () => void;
 }
 
 export default function FlexWrap({
@@ -20,6 +21,7 @@ export default function FlexWrap({
   justify = "start",
   align = "start",
   wrap = "wrap",
+  onClick,
 }: FlexWrapProps) {
   const directionClass = {
     row: "tw-flex-row",
@@ -51,5 +53,9 @@ export default function FlexWrap({
 
   const compiledClassName = `tw-flex ${directionClass[direction]} ${justifyClass[justify]} ${alignClass[align]} ${wrapClass[wrap]} ${className}`;
 
-  return <div className={compiledClassName}>{children}</div>;
+  return (
+    <div className={compiledClassName} onClick={onClick}>
+      {children}
+    </div>
+  );
 }

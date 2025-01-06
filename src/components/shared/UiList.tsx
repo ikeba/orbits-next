@@ -1,7 +1,10 @@
+import FlexWrap from "./FlexWrap";
+
 interface UiListProps {
   items: {
     id: string;
     label: string;
+    afterLabel?: string | React.ReactNode;
   }[];
   bordered?: boolean;
   className?: string;
@@ -20,16 +23,18 @@ export default function UiList({
   const commonItemClassName = "tw-p-2";
 
   return (
-    <ul className={className}>
+    <div className={className}>
       {items.map((item) => (
-        <li
+        <FlexWrap
           className={`${borderItemClassName} ${hoverItemClassName} ${commonItemClassName}`}
           key={item.id}
+          justify="space-between"
           onClick={() => onItemClick(item.id)}
         >
-          {item.label}
-        </li>
+          <div>{item.label}</div>
+          {item.afterLabel && <div>{item.afterLabel}</div>}
+        </FlexWrap>
       ))}
-    </ul>
+    </div>
   );
 }
