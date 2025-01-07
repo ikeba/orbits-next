@@ -1,5 +1,5 @@
 import FlexWrap from "@/components/shared/FlexWrap";
-import { Menu, Button, Text } from "@mantine/core";
+import { Menu, Button } from "@mantine/core";
 import { Ship } from "@/types/Ship";
 import { useStationsStore } from "@/stores/stations.store";
 import { useTravelStore } from "@/stores/travel.store";

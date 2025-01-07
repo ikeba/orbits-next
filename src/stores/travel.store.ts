@@ -1,8 +1,8 @@
 import { gameLoop } from "@/services/game-loop";
 import { Travel, TravelStatus } from "@/types/Travel";
 import { create } from "zustand";
-import { useFleetStore } from "./fleet.store";
-import { ShipStatus } from "@/types/Ship";
+import { TravelService } from "@/services/travel.service";
+import { GameLoopSystem } from "@/types/GameLoopSystems";
 
 const createTravel = ({
   shipId,
@@ -32,6 +32,9 @@ interface TravelState {
   travels: Travel[];
   archivedTravels: Travel[];
 
+  archiveTravel: (travelId: string) => void;
+  setTravelStatus: (travelId: string, status: TravelStatus) => void;
+  batchUpdateTravels: (updatedTravels: Travel[]) => void;
   addTravel: ({
     shipId,
     fromId,
@@ -46,49 +49,16 @@ interface TravelState {
 }
 
 export const useTravelStore = create<TravelState>()((set, get) => {
-  const travelSystem = (delta: number) => {
-    const { travels } = get();
-
-    travels.forEach((travel) => {
-      if (travel.status === TravelStatus.Pending) {
-        travel.status = TravelStatus.InProgress;
-        useFleetStore.getState().setShipPosition(travel.shipId, null);
-        useFleetStore
-          .getState()
-          .setShipStatus(travel.shipId, ShipStatus.Moving);
-        useFleetStore.getState().setShipTravelId(travel.shipId, travel.id);
-        console.log(`Travel ${travel.id} started`);
-      }
-
-      if (travel.status === TravelStatus.InProgress) {
-        travel.coveredDistance += travel.speed * delta;
-        console.log(
-          `Travel ${travel.id} covered ${travel.coveredDistance} of ${travel.distance}`
-        );
-      }
-
-      if (travel.coveredDistance >= travel.distance) {
-        travel.status = TravelStatus.Completed;
-        console.log(`Travel ${travel.id} completed`);
-        useFleetStore.getState().setShipPosition(travel.shipId, travel.toId);
-        useFleetStore.getState().setShipStatus(travel.shipId, ShipStatus.Idle);
-        useFleetStore.getState().setShipTravelId(travel.shipId, null);
-        set((state) => ({
-          travels: state.travels.filter((t) => t.id !== travel.id),
-          archivedTravels: [...state.archivedTravels, travel],
-        }));
-      }
-    });
-  };
-
-  gameLoop.addSystem(travelSystem);
+  gameLoop.addSystem(GameLoopSystem.Travel, () =>
+    TravelService.updateTravels()
+  );
 
   return {
     travels: [],
     archivedTravels: [],
 
     addTravel: ({ shipId, fromId, toId, speed }) => {
-      const DISTANCE = 10;
+      const DISTANCE = 5;
 
       const newTravel = createTravel({
         shipId,
@@ -100,6 +70,33 @@ export const useTravelStore = create<TravelState>()((set, get) => {
 
       set((state) => ({
         travels: [...state.travels, newTravel],
+      }));
+    },
+
+    archiveTravel: (travelId: string) => {
+      const travel = get().travels.find((t) => t.id === travelId);
+      if (!travel) return;
+
+      set((state) => ({
+        travels: state.travels.filter((t) => t.id !== travelId),
+        archivedTravels: [...state.archivedTravels, travel],
+      }));
+    },
+
+    setTravelStatus: (travelId: string, status: TravelStatus) => {
+      set((state) => ({
+        travels: state.travels.map((t) =>
+          t.id === travelId ? { ...t, status } : t
+        ),
+      }));
+    },
+
+    batchUpdateTravels: (updatedTravels: Travel[]) => {
+      set((state) => ({
+        travels: state.travels.map((travel) => {
+          const updated = updatedTravels.find((t) => t.id === travel.id);
+          return updated || travel;
+        }),
       }));
     },
   };

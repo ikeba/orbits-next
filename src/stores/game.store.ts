@@ -1,8 +1,10 @@
 import { create } from "zustand";
 import { gameLoop } from "@/services/game-loop";
 import { GameScenario } from "@/types/Scenario";
+import { GameLoopSystem } from "@/types/GameLoopSystems";
 
 interface GameState {
+  startTime: number;
   tick: number;
   isRunning: boolean;
   speed: number;
@@ -15,22 +17,28 @@ interface GameState {
 }
 
 export const useGameStore = create<GameState>((set, get) => {
-  const timeSystem = (delta: number) => {
-    const { speed } = get();
-    set((state) => ({
-      tick: state.tick + delta * speed,
+  const timeSystem = () => {
+    const { speed, startTime } = get();
+    const currentTime = Date.now();
+    const elapsedSeconds = (currentTime - startTime) / 1000;
+
+    set(() => ({
+      tick: elapsedSeconds * speed,
     }));
   };
 
-  gameLoop.addSystem(timeSystem);
+  gameLoop.addSystem(GameLoopSystem.Game, timeSystem);
 
   const start = () => {
-    set({ isRunning: false });
+    set({
+      isRunning: true,
+      startTime: Date.now(),
+    });
     gameLoop.start();
   };
 
   const pause = () => {
-    set({ isRunning: true });
+    set({ isRunning: false });
     gameLoop.pause();
   };
 
@@ -43,6 +51,7 @@ export const useGameStore = create<GameState>((set, get) => {
   };
 
   return {
+    startTime: Date.now(),
     tick: 0,
     isRunning: true,
     speed: 1,
