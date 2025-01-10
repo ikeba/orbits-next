@@ -1,12 +1,15 @@
-import { Travel } from "@/types/Travel";
-
-import { useFleetStore } from "@/stores/fleet.store";
-import { useTravelStore } from "@/stores/travel.store";
 import { Ship, ShipStatus } from "@/types/Ship";
-import { TravelStatus } from "@/types/Travel";
+import { Travel, TravelStatus } from "@/types/Travel";
+
+import { useTravelStore } from "@/stores/travel.store";
+
 import { mainConfig } from "@/configs/main.config";
+import { FleetService } from "./fleet.service";
 
 export class TravelService {
+  /**
+   * Function to be used in game loop to update travel progress
+   */
   static updateTravels() {
     const { travels } = useTravelStore.getState();
 
@@ -53,6 +56,11 @@ export class TravelService {
     }
   }
 
+  /**
+   * Function to start travel. Creates travel entity and adds it to the store.
+   * @param ship - Ship to start travel
+   * @param targetId - Target id to travel to
+   */
   public static startTravel(ship: Ship, targetId: string) {
     const travel = this.createTravelEntity({
       shipId: ship.id,
@@ -63,10 +71,7 @@ export class TravelService {
     useTravelStore.getState().addTravel(travel);
   }
 
-  public static getTravelProgressByShipId(shipId: string): number {
-    const travel = useTravelStore
-      .getState()
-      .travels.find((travel) => travel.shipId === shipId);
+  public static getTravelProgress(travel: Travel | undefined): number {
     if (!travel) return 0;
     return Math.round((travel.coveredDistance / travel.distance) * 100);
   }
@@ -112,30 +117,21 @@ export class TravelService {
     };
   }
 
+  /**
+   * Function to update ship travel status in the fleet store.
+   * @param travel - Travel to update
+   */
   private static startTravelProgress(travel: Travel) {
-    const fleetStore = useFleetStore.getState();
-
-    fleetStore.setShipPosition(travel.shipId, null);
-    fleetStore.setShipStatus(travel.shipId, ShipStatus.Moving);
-    fleetStore.setShipTravelId(travel.shipId, travel.id);
-
-    // console.log(
-    //   `Travel ${travel.id} started at ${new Date().toLocaleTimeString()}`
-    // );
+    FleetService.updateShipTravel(travel.shipId, travel.id);
   }
 
+  /**
+   * Function to complete travel in the fleet store and travel store.
+   * Updates ship status and removes travel from the list of the active travels.
+   * @param travel - Travel to complete
+   */
   private static completeTravel(travel: Travel) {
-    const fleetStore = useFleetStore.getState();
-    const travelStore = useTravelStore.getState();
-
-    fleetStore.setShipPosition(travel.shipId, travel.toId);
-    fleetStore.setShipStatus(travel.shipId, ShipStatus.Idle);
-    fleetStore.setShipTravelId(travel.shipId, null);
-
-    travelStore.setTravelArchive(travel.id);
-
-    // console.log(
-    //   `Travel ${travel.id} completed at ${new Date().toLocaleTimeString()}`
-    // );
+    FleetService.completeShipTravel(travel.shipId, travel.toId);
+    useTravelStore.getState().setTravelArchive(travel.id);
   }
 }

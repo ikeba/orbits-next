@@ -20,6 +20,8 @@ interface FleetStore {
     resourceName: ResourceName,
     newAmount: number
   ) => void;
+  updateShipTravel: (shipId: string, travelId: string | null) => void;
+  completeShipTravel: (shipId: string, destinationId: string) => void;
 
   // Getters
   getShipById: (id: string) => Ship | null;
@@ -89,6 +91,36 @@ export const useFleetStore = create<FleetStore>((set, get) => ({
                 ...ship.resources,
                 [resourceName]: { amount: newAmount },
               },
+            }
+          : ship
+      ),
+    }));
+  },
+
+  updateShipTravel: (shipId: string, travelId: string | null) => {
+    set((state) => ({
+      ships: state.ships.map((ship) =>
+        ship.id === shipId
+          ? {
+              ...ship,
+              status: travelId ? ShipStatus.Moving : ShipStatus.Idle,
+              positionId: travelId ? null : ship.positionId,
+              travelId,
+            }
+          : ship
+      ),
+    }));
+  },
+
+  completeShipTravel: (shipId: string, destinationId: string) => {
+    set((state) => ({
+      ships: state.ships.map((ship) =>
+        ship.id === shipId
+          ? {
+              ...ship,
+              status: ShipStatus.Idle,
+              positionId: destinationId,
+              travelId: null,
             }
           : ship
       ),

@@ -51,6 +51,14 @@ export class FleetService {
     TravelService.startTravel(ship, destinationId);
   }
 
+  public static updateShipTravel(shipId: string, travelId: string | null) {
+    useFleetStore.getState().updateShipTravel(shipId, travelId);
+  }
+
+  public static completeShipTravel(shipId: string, destinationId: string) {
+    useFleetStore.getState().completeShipTravel(shipId, destinationId);
+  }
+
   public static getShipById(id: string): Ship | null {
     return useFleetStore.getState().getShipById(id);
   }
