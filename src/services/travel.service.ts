@@ -2,8 +2,9 @@ import { Travel } from "@/types/Travel";
 
 import { useFleetStore } from "@/stores/fleet.store";
 import { useTravelStore } from "@/stores/travel.store";
-import { ShipStatus } from "@/types/Ship";
+import { Ship, ShipStatus } from "@/types/Ship";
 import { TravelStatus } from "@/types/Travel";
+import { mainConfig } from "@/configs/main.config";
 
 export class TravelService {
   static updateTravels() {
@@ -52,6 +53,62 @@ export class TravelService {
     }
   }
 
+  public static startTravel(ship: Ship, targetId: string) {
+    console.log("startTravel", ship, targetId);
+
+    const canTravel = this.canTravel({
+      status: ship.status,
+      positionId: ship.positionId,
+      travelId: ship.travelId,
+    } as Ship);
+
+    if (!canTravel) return;
+
+    const travel = this.createTravelEntity({
+      shipId: ship.id,
+      fromId: ship.positionId!,
+      toId: targetId,
+    });
+
+    useTravelStore.getState().addTravel(travel);
+  }
+
+  public static getTravelProgressByShipId(shipId: string): number {
+    const travel = useTravelStore
+      .getState()
+      .travels.find((travel) => travel.shipId === shipId);
+    if (!travel) return 0;
+    return Math.round((travel.coveredDistance / travel.distance) * 100);
+  }
+
+  private static createTravelEntity({
+    shipId,
+    fromId,
+    toId,
+  }: {
+    shipId: string;
+    fromId: string;
+    toId: string;
+  }): Travel {
+    return {
+      id: `travel_${shipId}_${toId}_${Date.now()}`,
+      shipId,
+      fromId,
+      toId,
+      status: TravelStatus.Pending,
+      startTime: Date.now(),
+      coveredDistance: 0,
+      distance: mainConfig.defaultTravelDistance,
+      speed: mainConfig.defaultTravelSpeed,
+    };
+  }
+
+  private static canTravel(ship: Ship | undefined): boolean {
+    if (!ship) return false;
+    const { status, positionId, travelId } = ship;
+    return status === ShipStatus.Idle && positionId !== null && !travelId;
+  }
+
   private static startTravelProgress(travel: Travel) {
     const fleetStore = useFleetStore.getState();
 
@@ -59,9 +116,9 @@ export class TravelService {
     fleetStore.setShipStatus(travel.shipId, ShipStatus.Moving);
     fleetStore.setShipTravelId(travel.shipId, travel.id);
 
-    console.log(
-      `Travel ${travel.id} started at ${new Date().toLocaleTimeString()}`
-    );
+    // console.log(
+    //   `Travel ${travel.id} started at ${new Date().toLocaleTimeString()}`
+    // );
   }
 
   private static completeTravel(travel: Travel) {
@@ -72,10 +129,10 @@ export class TravelService {
     fleetStore.setShipStatus(travel.shipId, ShipStatus.Idle);
     fleetStore.setShipTravelId(travel.shipId, null);
 
-    travelStore.archiveTravel(travel.id);
+    travelStore.setTravelArchive(travel.id);
 
-    console.log(
-      `Travel ${travel.id} completed at ${new Date().toLocaleTimeString()}`
-    );
+    // console.log(
+    //   `Travel ${travel.id} completed at ${new Date().toLocaleTimeString()}`
+    // );
   }
 }

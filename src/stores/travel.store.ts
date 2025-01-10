@@ -4,48 +4,14 @@ import { create } from "zustand";
 import { TravelService } from "@/services/travel.service";
 import { GameLoopSystem } from "@/types/GameLoopSystems";
 
-const createTravel = ({
-  shipId,
-  fromId,
-  toId,
-  speed,
-  distance,
-}: {
-  shipId: string;
-  fromId: string;
-  toId: string;
-  speed: number;
-  distance: number;
-}) => ({
-  id: `travel-${shipId}-${fromId}-${toId}-${Date.now()}`,
-  shipId,
-  fromId,
-  toId,
-  status: TravelStatus.Pending,
-  startTime: Date.now(),
-  distance,
-  coveredDistance: 0,
-  speed,
-});
-
 interface TravelState {
   travels: Travel[];
   archivedTravels: Travel[];
 
-  archiveTravel: (travelId: string) => void;
+  addTravel: (travel: Travel) => void;
+  setTravelArchive: (travelId: string) => void;
   setTravelStatus: (travelId: string, status: TravelStatus) => void;
   batchUpdateTravels: (updatedTravels: Travel[]) => void;
-  addTravel: ({
-    shipId,
-    fromId,
-    toId,
-    speed,
-  }: {
-    shipId: string;
-    fromId: string;
-    toId: string;
-    speed: number;
-  }) => void;
 }
 
 export const useTravelStore = create<TravelState>()((set, get) => {
@@ -57,23 +23,13 @@ export const useTravelStore = create<TravelState>()((set, get) => {
     travels: [],
     archivedTravels: [],
 
-    addTravel: ({ shipId, fromId, toId, speed }) => {
-      const DISTANCE = 5;
-
-      const newTravel = createTravel({
-        shipId,
-        fromId,
-        toId,
-        speed,
-        distance: DISTANCE,
-      });
-
+    addTravel: (travel: Travel) => {
       set((state) => ({
-        travels: [...state.travels, newTravel],
+        travels: [...state.travels, travel],
       }));
     },
 
-    archiveTravel: (travelId: string) => {
+    setTravelArchive: (travelId: string) => {
       const travel = get().travels.find((t) => t.id === travelId);
       if (!travel) return;
 

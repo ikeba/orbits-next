@@ -17,6 +17,7 @@ interface FleetStore {
   }) => Ship;
   selectShip: (id: string) => void;
   getSelectedShip: () => Ship | null;
+  getShipById: (id: string) => Ship | null;
   setShipPosition: (shipId: string, positionId: string | null) => void;
   setShipStatus: (shipId: string, status: ShipStatus) => void;
   setShipTravelId: (shipId: string, travelId: string | null) => void;
@@ -69,6 +70,10 @@ export const useFleetStore = create<FleetStore>((set, get) => ({
 
   getSelectedShip: () => {
     return get().ships.find((ship) => ship.id === get().selectedShipId) || null;
+  },
+
+  getShipById: (id: string) => {
+    return get().ships.find((ship) => ship.id === id) || null;
   },
 
   setShipStatus: (shipId: string, status: ShipStatus) => {

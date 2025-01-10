@@ -18,13 +18,15 @@ interface GameState {
 
 export const useGameStore = create<GameState>((set, get) => {
   const timeSystem = () => {
-    const { speed, startTime } = get();
+    const { speed, startTime, tick } = get();
     const currentTime = Date.now();
-    const elapsedSeconds = (currentTime - startTime) / 1000;
+    const newTick = ((currentTime - startTime) / 1000) * speed;
 
-    set(() => ({
-      tick: elapsedSeconds * speed,
-    }));
+    if (Math.abs(newTick - tick) >= 0.1) {
+      set(() => ({
+        tick: newTick,
+      }));
+    }
   };
 
   gameLoop.addSystem(GameLoopSystem.Game, timeSystem);
