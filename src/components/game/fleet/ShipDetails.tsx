@@ -8,7 +8,6 @@ export default function ShipDetails({ ship }: { ship: Ship }) {
       <FlexWrap direction="column">
         <b>{ship.name}</b>
         <p>Status: {ship.status}</p>
-
         <TravelDetails shipId={ship.id} />
       </FlexWrap>
     </div>

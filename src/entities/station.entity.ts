@@ -1,15 +1,17 @@
 import { Station } from "@/types/Station";
-import { createStationResources } from "./resource.entity";
+import { createStationPrices, createStationResources } from "./resource.entity";
+import { getRandomId } from "@/helpers/string.helper";
 
 export const createStation = ({
   name,
   type,
-}: Omit<Station, "id" | "resources">): Station => {
+}: Pick<Station, "name" | "type">): Station => {
   return {
-    id: `station-${Math.random().toString(36).substring(2, 15)}`,
+    id: `station_${name.toLowerCase().replace(/\s+/g, "-")}_${getRandomId()}`,
     name,
     type,
-    resources: createStationResources(type),
+    resources: createStationResources(),
+    resourcePrices: createStationPrices(),
   };
 };
 

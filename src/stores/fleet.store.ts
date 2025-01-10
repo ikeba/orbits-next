@@ -1,23 +1,17 @@
 import { create } from "zustand";
-import { Ship, ShipResources, ShipStatus } from "@/types/Ship";
+import { Ship, ShipStatus } from "@/types/Ship";
 import { ResourceName } from "@/types/Resource";
-
-const DEFAULT_CARGO_SIZE = 1000;
 
 interface FleetStore {
   ships: Ship[];
   selectedShipId: string | null;
 
-  addShip: ({
-    name,
-    positionId,
-  }: {
-    name: string;
-    positionId: string | null;
-  }) => Ship;
+  // UI methods
   selectShip: (id: string) => void;
   getSelectedShip: () => Ship | null;
-  getShipById: (id: string) => Ship | null;
+
+  // Setters
+  addShip: (ship: Ship) => Ship;
   setShipPosition: (shipId: string, positionId: string | null) => void;
   setShipStatus: (shipId: string, status: ShipStatus) => void;
   setShipTravelId: (shipId: string, travelId: string | null) => void;
@@ -26,39 +20,16 @@ interface FleetStore {
     resourceName: ResourceName,
     newAmount: number
   ) => void;
-}
 
-export const createEmptyResources = (): ShipResources => {
-  return Object.values(ResourceName).reduce(
-    (acc, resourceName) => ({
-      ...acc,
-      [resourceName]: { amount: 0 },
-    }),
-    {} as ShipResources
-  );
-};
+  // Getters
+  getShipById: (id: string) => Ship | null;
+}
 
 export const useFleetStore = create<FleetStore>((set, get) => ({
   ships: [],
   selectedShipId: null,
 
-  addShip: ({
-    name,
-    positionId = null,
-  }: {
-    name: string;
-    positionId: string | null;
-  }) => {
-    const ship: Ship = {
-      id: `ship-${Date.now()}`,
-      name,
-      cargoSize: DEFAULT_CARGO_SIZE,
-      status: ShipStatus.Idle,
-      positionId,
-      travelId: null,
-      resources: createEmptyResources(),
-    };
-
+  addShip: (ship: Ship) => {
     set((state) => ({ ...state, ships: [...state.ships, ship] }));
 
     return ship;

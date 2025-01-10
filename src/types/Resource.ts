@@ -19,13 +19,24 @@ export enum ResourceName {
   Hydrogen = "hydrogen",
 }
 
-export interface Resource {
-  name: ResourceName;
-  category: ResourceCategory;
+export interface ResourceAmount {
   amount: number;
-  basePrice: number;
-  sellPrice?: number;
-  buyPrice?: number;
 }
 
-export type ResourseList = Record<ResourceName, Resource>;
+// Type for storing resources (same for ships and stations)
+export type ResourceStorage = Record<ResourceName, ResourceAmount>;
+
+// Resource information (without amount)
+export interface ResourceInfo {
+  name: ResourceName;
+  category: ResourceCategory;
+  basePrice: number;
+}
+
+// Prices for resources for a specific station
+export interface ResourcePrice {
+  sellPrice: number;
+  buyPrice: number;
+}
+
+export type StationPrices = Record<ResourceName, ResourcePrice>;

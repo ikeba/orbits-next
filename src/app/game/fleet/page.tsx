@@ -8,28 +8,16 @@ import UiList from "@/components/shared/UiList";
 import ShipDetails from "@/components/game/fleet/ShipDetails";
 import { useStationsStore } from "@/stores/stations.store";
 import { Button } from "@mantine/core";
+import { FleetService } from "@/services/fleet.service";
 
 export default function Fleet() {
-  const { ships, addShip, selectShip, getSelectedShip } = useFleetStore();
+  const { ships, selectShip, selectedShipId } = useFleetStore();
   const { stations } = useStationsStore();
 
-  // useEffect(() => {
-  //   if (ships.length === 0) {
-  //     addShip("Ship 1");
-  //   }
-  // }, []);
-
-  const handleAddShip = () => {
-    const ship = addShip({
-      name: `Ship ${ships.length + 1}`,
-      positionId: stations[0].id,
-    });
-    selectShip(ship.id);
-  };
-
-  const handleSelectShip = (id: string) => {
-    selectShip(id);
-  };
+  const selectedShip = useMemo(
+    () => ships.find((ship) => ship.id === selectedShipId),
+    [ships, selectedShipId]
+  );
 
   const normalizedShips = useMemo(
     () =>
@@ -40,7 +28,17 @@ export default function Fleet() {
     [ships]
   );
 
-  const selectedShip = getSelectedShip();
+  const handleAddShip = () => {
+    const ship = FleetService.createShip({
+      name: `Ship ${ships.length + 1}`,
+      positionId: stations[0].id,
+    });
+    selectShip(ship.id);
+  };
+
+  const handleSelectShip = (id: string) => {
+    selectShip(id);
+  };
 
   return (
     <div className="tw-h-full">

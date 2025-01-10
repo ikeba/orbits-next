@@ -54,16 +54,6 @@ export class TravelService {
   }
 
   public static startTravel(ship: Ship, targetId: string) {
-    console.log("startTravel", ship, targetId);
-
-    const canTravel = this.canTravel({
-      status: ship.status,
-      positionId: ship.positionId,
-      travelId: ship.travelId,
-    } as Ship);
-
-    if (!canTravel) return;
-
     const travel = this.createTravelEntity({
       shipId: ship.id,
       fromId: ship.positionId!,
@@ -80,6 +70,25 @@ export class TravelService {
     if (!travel) return 0;
     return Math.round((travel.coveredDistance / travel.distance) * 100);
   }
+
+  public static canTravel({
+    shipStatus,
+    shipPositionId,
+    shipDestinationId,
+  }: {
+    shipStatus: ShipStatus;
+    shipPositionId: string | null;
+    shipDestinationId: string | null;
+  }): boolean {
+    return (
+      shipStatus === ShipStatus.Idle &&
+      shipPositionId !== null &&
+      shipDestinationId !== null &&
+      shipDestinationId !== shipPositionId
+    );
+  }
+
+  // Private methods
 
   private static createTravelEntity({
     shipId,
@@ -101,12 +110,6 @@ export class TravelService {
       distance: mainConfig.defaultTravelDistance,
       speed: mainConfig.defaultTravelSpeed,
     };
-  }
-
-  private static canTravel(ship: Ship | undefined): boolean {
-    if (!ship) return false;
-    const { status, positionId, travelId } = ship;
-    return status === ShipStatus.Idle && positionId !== null && !travelId;
   }
 
   private static startTravelProgress(travel: Travel) {

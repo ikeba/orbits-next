@@ -1,17 +1,20 @@
 import {
-  Resource,
   ResourceCategory,
+  ResourceInfo,
   ResourceName,
-  ResourseList,
+  ResourceStorage,
+  StationPrices,
 } from "@/types/Resource";
-import { StationType } from "@/types/Station";
 
-const DEFAULT_STATION_RESOURCES = 1000;
+const DEFAULT_STATION_RESOURCES = 100;
+const DEFAULT_SHIP_RESOURCES = 0;
+const DEFAULT_STATION_PRICES = {
+  [ResourceName.Water]: { sellPrice: 1, buyPrice: 1 },
+  [ResourceName.Iron]: { sellPrice: 1, buyPrice: 1 },
+  [ResourceName.Hydrogen]: { sellPrice: 1, buyPrice: 1 },
+};
 
-export const BaseResourses: Record<
-  ResourceName,
-  Omit<Resource, "amount" | "currentPrice">
-> = {
+export const BaseResourses: Record<ResourceName, ResourceInfo> = {
   [ResourceName.Water]: {
     name: ResourceName.Water,
     category: ResourceCategory.Food,
@@ -29,30 +32,29 @@ export const BaseResourses: Record<
   },
 };
 
-export const createResource = (
-  resourceName: ResourceName,
-  amount = DEFAULT_STATION_RESOURCES
-): Resource => {
-  const resource = BaseResourses[resourceName];
-
-  return {
-    ...resource,
-    amount,
-    sellPrice: resource.basePrice,
-    buyPrice: resource.basePrice,
-  };
-};
-
-export const createStationResources = (
-  stationType: StationType
-): ResourseList => {
-  console.log(stationType);
-
+export const createStationResources = (): ResourceStorage => {
   return Object.values(ResourceName).reduce(
     (acc, resourceName) => ({
       ...acc,
-      [resourceName]: createResource(resourceName),
+      [resourceName]: DEFAULT_STATION_RESOURCES,
     }),
-    {} as ResourseList
+    {} as ResourceStorage
+  );
+};
+
+export const createShipResources = (): ResourceStorage => {
+  return Object.values(ResourceName).reduce(
+    (acc, resourceName) => ({ ...acc, [resourceName]: DEFAULT_SHIP_RESOURCES }),
+    {} as ResourceStorage
+  );
+};
+
+export const createStationPrices = (): StationPrices => {
+  return Object.values(ResourceName).reduce(
+    (acc, resourceName) => ({
+      ...acc,
+      [resourceName]: DEFAULT_STATION_PRICES[resourceName],
+    }),
+    {} as StationPrices
   );
 };
