@@ -1,7 +1,7 @@
 import { ResourceName } from "@/types/Resource";
 import { Station } from "@/types/Station";
 import { Ship } from "@/types/Ship";
-import { BaseResourses } from "@/entities/resource.entity";
+import { RESOURCES_CONFIG } from "@/configs/resources.config";
 import { TradeService } from "@/services/trade.service";
 
 import ResourceTradeRow from "./ResourceTradeRow";
@@ -40,7 +40,7 @@ export default function Market({ source, destination }: MarketProps) {
         <h2>Source: {source.name}</h2>
         <h2>Destination: {destination?.name}</h2>
 
-        {Object.values(BaseResourses).map((resource) => (
+        {Object.values(RESOURCES_CONFIG).map((resource) => (
           <ResourceTradeRow
             key={resource.name}
             name={resource.name}

@@ -3,8 +3,8 @@ import { Travel, TravelStatus } from "@/types/Travel";
 
 import { useTravelStore } from "@/stores/travel.store";
 
-import { mainConfig } from "@/configs/main.config";
 import { FleetService } from "./fleet.service";
+import { GAME_CONFIG } from "@/configs/game.config";
 
 export class TravelService {
   /**
@@ -112,8 +112,8 @@ export class TravelService {
       status: TravelStatus.Pending,
       startTime: Date.now(),
       coveredDistance: 0,
-      distance: mainConfig.defaultTravelDistance,
-      speed: mainConfig.defaultTravelSpeed,
+      distance: GAME_CONFIG.travel.defaultDistance,
+      speed: GAME_CONFIG.travel.defaultSpeed,
     };
   }
 

@@ -3,6 +3,7 @@ import { PlayerService } from "@/services/player.service";
 import { useGameStore } from "@/stores/game.store";
 import { useStationsStore } from "@/stores/stations.store";
 import { GameScenario } from "@/types/Scenario";
+import { GAME_CONFIG } from "@/configs/game.config";
 
 export const defaultScenario: GameScenario = {
   id: "default",
@@ -10,12 +11,14 @@ export const defaultScenario: GameScenario = {
   description: "Default scenario",
   setup: () => {
     useGameStore.getState().setScenario(defaultScenario);
-    // 1. Create player
-    PlayerService.createPlayer({ name: "Player", credits: 100 });
 
-    // 2. Add base ship
+    PlayerService.createPlayer({
+      name: "Player",
+      credits: GAME_CONFIG.starting.playerCredits,
+    });
+
     FleetService.createShip({
-      name: "Base Ship",
+      name: GAME_CONFIG.starting.shipName,
       positionId: useStationsStore.getState().stations[0].id,
     });
   },

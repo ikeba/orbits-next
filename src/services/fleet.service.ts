@@ -1,11 +1,11 @@
 import { Ship } from "@/types/Ship";
 import { ResourceName } from "@/types/Resource";
-import { mainConfig } from "@/configs/main.config";
 import { useFleetStore } from "@/stores/fleet.store";
 import { ShipStatus } from "@/types/Ship";
 import { createShipResources } from "@/entities/resource.entity";
 import { getRandomId, slugify } from "@/helpers/string.helper";
 import { TravelService } from "./travel.service";
+import { GAME_CONFIG } from "@/configs/game.config";
 
 export class FleetService {
   /**
@@ -108,7 +108,7 @@ export class FleetService {
       status: ShipStatus.Idle,
       positionId,
       travelId: null,
-      cargoSize: mainConfig.defaultCargoSize,
+      cargoSize: GAME_CONFIG.ship.defaultCargoSize,
       resources: createShipResources(),
     };
 

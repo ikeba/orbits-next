@@ -1,65 +1,23 @@
-import {
-  ResourceCategory,
-  ResourceInfo,
-  ResourceName,
-  ResourceStorage,
-  StationPrices,
-} from "@/types/Resource";
-import { Station, StationType } from "@/types/Station";
-
-const DEFAULT_STATION_RESOURCES = 100;
-const DEFAULT_SHIP_RESOURCES = 0;
-const DEFAULT_STATION_PRICES = {
-  [StationType.Industrial]: {
-    [ResourceName.Water]: { sellPrice: 2, buyPrice: 1 },
-    [ResourceName.Iron]: { sellPrice: 2, buyPrice: 1 },
-    [ResourceName.Hydrogen]: { sellPrice: 2, buyPrice: 1 },
-  },
-  [StationType.Agricultural]: {
-    [ResourceName.Water]: { sellPrice: 1, buyPrice: 4 },
-    [ResourceName.Iron]: { sellPrice: 2, buyPrice: 1 },
-    [ResourceName.Hydrogen]: { sellPrice: 2, buyPrice: 1 },
-  },
-  [StationType.Mining]: {
-    [ResourceName.Water]: { sellPrice: 2, buyPrice: 1 },
-    [ResourceName.Iron]: { sellPrice: 2, buyPrice: 1 },
-    [ResourceName.Hydrogen]: { sellPrice: 2, buyPrice: 1 },
-  },
-};
-
-export const BaseResourses: Record<ResourceName, ResourceInfo> = {
-  [ResourceName.Water]: {
-    name: ResourceName.Water,
-    category: ResourceCategory.Food,
-    basePrice: 1,
-  },
-  [ResourceName.Iron]: {
-    name: ResourceName.Iron,
-    category: ResourceCategory.Ore,
-    basePrice: 1,
-  },
-  [ResourceName.Hydrogen]: {
-    name: ResourceName.Hydrogen,
-    category: ResourceCategory.Fuel,
-    basePrice: 1,
-  },
-};
+import { ResourceName, ResourceStorage, StationPrices } from "@/types/Resource";
+import { RESOURCES_CONFIG, RESOURCE_AMOUNTS } from "@/configs/resources.config";
+import { Station } from "@/types/Station";
+import { STATION_PRICES_CONFIG } from "@/configs/stations.config";
 
 export const createStationResources = (): ResourceStorage => {
-  return Object.values(ResourceName).reduce(
-    (acc, resourceName) => ({
+  return Object.values(RESOURCES_CONFIG).reduce(
+    (acc, { name }) => ({
       ...acc,
-      [resourceName]: { amount: DEFAULT_STATION_RESOURCES },
+      [name]: { amount: RESOURCE_AMOUNTS.STATION_DEFAULT },
     }),
     {} as ResourceStorage
   );
 };
 
 export const createShipResources = (): ResourceStorage => {
-  return Object.values(ResourceName).reduce(
-    (acc, resourceName) => ({
+  return Object.values(RESOURCES_CONFIG).reduce(
+    (acc, { name }) => ({
       ...acc,
-      [resourceName]: { amount: DEFAULT_SHIP_RESOURCES },
+      [name]: { amount: RESOURCE_AMOUNTS.SHIP_DEFAULT },
     }),
     {} as ResourceStorage
   );
@@ -71,7 +29,7 @@ export const createStationPrices = ({
   return Object.values(ResourceName).reduce(
     (acc, resourceName) => ({
       ...acc,
-      [resourceName]: DEFAULT_STATION_PRICES[type][resourceName],
+      [resourceName]: STATION_PRICES_CONFIG[type][resourceName],
     }),
     {} as StationPrices
   );
