@@ -36,7 +36,7 @@ export const createStationResources = (): ResourceStorage => {
   return Object.values(ResourceName).reduce(
     (acc, resourceName) => ({
       ...acc,
-      [resourceName]: DEFAULT_STATION_RESOURCES,
+      [resourceName]: { amount: DEFAULT_STATION_RESOURCES },
     }),
     {} as ResourceStorage
   );
@@ -44,7 +44,10 @@ export const createStationResources = (): ResourceStorage => {
 
 export const createShipResources = (): ResourceStorage => {
   return Object.values(ResourceName).reduce(
-    (acc, resourceName) => ({ ...acc, [resourceName]: DEFAULT_SHIP_RESOURCES }),
+    (acc, resourceName) => ({
+      ...acc,
+      [resourceName]: { amount: DEFAULT_SHIP_RESOURCES },
+    }),
     {} as ResourceStorage
   );
 };
