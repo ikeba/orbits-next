@@ -1,7 +1,8 @@
 import { GameScenario } from "@/types/Scenario";
-import { useGameStore } from "@/stores/game.store";
 import { gameLoop } from "@/services/game-loop";
 import { defaultScenario } from "@/scenarios/default-scenario.scenario";
+
+import { useGameStore } from "@/stores/game.store";
 
 export class GameService {
   /**

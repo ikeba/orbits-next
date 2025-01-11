@@ -1,10 +1,10 @@
 import { Ship, ShipStatus } from "@/types/Ship";
 import { Travel, TravelStatus } from "@/types/Travel";
-
-import { useTravelStore } from "@/stores/travel.store";
+import { GAME_CONFIG } from "@/configs/game.config";
 
 import { FleetService } from "./fleet.service";
-import { GAME_CONFIG } from "@/configs/game.config";
+
+import { useTravelStore } from "@/stores/travel.store";
 
 export class TravelService {
   /**

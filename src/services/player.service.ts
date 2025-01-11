@@ -1,6 +1,7 @@
-import { usePlayerStore } from "@/stores/player.store";
 import { Player } from "@/types/Player";
 import { getRandomId } from "@/helpers/string.helper";
+
+import { usePlayerStore } from "@/stores/player.store";
 
 export class PlayerService {
   /**

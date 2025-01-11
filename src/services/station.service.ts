@@ -2,9 +2,9 @@ import { Station } from "@/types/Station";
 import { ResourceName } from "@/types/Resource";
 import { ResourceService } from "@/services/resource.service";
 import { getRandomId } from "@/helpers/string.helper";
+import { BASE_STATIONS_CONFIG } from "@/configs/stations.config";
 
 import { useStationsStore } from "@/stores/stations.store";
-import { BASE_STATIONS_CONFIG } from "@/configs/stations.config";
 
 export class StationService {
   /**

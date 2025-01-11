@@ -8,6 +8,7 @@ import { TravelService } from "./travel.service";
 import { ResourceService } from "./resource.service";
 
 import { useFleetStore } from "@/stores/fleet.store";
+
 export class FleetService {
   /**
    * Get ship by ID
