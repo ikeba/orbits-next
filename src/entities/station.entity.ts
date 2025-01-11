@@ -1,4 +1,4 @@
-import { Station } from "@/types/Station";
+import { Station, StationType } from "@/types/Station";
 import { createStationPrices, createStationResources } from "./resource.entity";
 import { getRandomId } from "@/helpers/string.helper";
 
@@ -11,21 +11,21 @@ export const createStation = ({
     name,
     type,
     resources: createStationResources(),
-    resourcePrices: createStationPrices(),
+    resourcePrices: createStationPrices({ type }),
   };
 };
 
 export const BaseStations: Station[] = [
   createStation({
     name: "Central Trading Hub",
-    type: "industrial",
+    type: StationType.Industrial,
   }),
   createStation({
     name: "Agricultural Center",
-    type: "agricultural",
+    type: StationType.Agricultural,
   }),
   createStation({
     name: "Mining Outpost Alpha",
-    type: "mining",
+    type: StationType.Mining,
   }),
 ];

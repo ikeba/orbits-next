@@ -31,7 +31,7 @@ export default function ResourceTradeRow({
         onClick={() => onTransferToSource(1)}
         disabled={disabled || destinationAmount === 0}
       >
-        {sellPrice}
+        {buyPrice}
       </Button>
       <div className="tw-w-[100px] tw-text-center">{name}</div>
       <Button
@@ -39,7 +39,7 @@ export default function ResourceTradeRow({
         onClick={() => onTransferToDestination(1)}
         disabled={disabled || sourceAmount === 0}
       >
-        {buyPrice}
+        {sellPrice}
       </Button>
       <Input readOnly={true} value={destinationAmount} />
     </FlexWrap>

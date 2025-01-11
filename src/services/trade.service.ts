@@ -2,10 +2,9 @@ import { ResourceName } from "@/types/Resource";
 import { Ship } from "@/types/Ship";
 import { Station } from "@/types/Station";
 import { TradeType } from "@/types/Trade";
-import { useFleetStore } from "@/stores/fleet.store";
-import { useStationsStore } from "@/stores/stations.store";
-import { BaseResourses } from "@/entities/resource.entity";
-import { PlayerService } from "@/services/player.service";
+import { FleetService } from "./fleet.service";
+import { StationService } from "./station.service";
+import { PlayerService } from "./player.service";
 
 const isStation = (trader: Ship | Station): trader is Station => {
   return "resourcePrices" in trader;
@@ -13,32 +12,23 @@ const isStation = (trader: Ship | Station): trader is Station => {
 
 export class TradeService {
   /**
-   * Determine transaction type based on participants
+   * Execute trade transaction between two traders
    */
-  private static determineTransactionType(
-    from: Ship | Station,
-    to: Ship | Station
-  ): TradeType {
-    const isFromStation = from.hasOwnProperty("resourcePrices");
-    const isToStation = to.hasOwnProperty("resourcePrices");
-
-    if (isFromStation && !isToStation) return TradeType.Purchase;
-    if (!isFromStation && isToStation) return TradeType.Sale;
-    return TradeType.Transfer;
-  }
-
-  /**
-   * Execute a trade transaction between two traders
-   * Returns transaction result with success status and total cost
-   */
-  static executeTransaction(params: {
+  static executeTransaction({
+    fromId,
+    toId,
+    resource,
+    amount,
+  }: {
     fromId: string;
     toId: string;
     resource: ResourceName;
     amount: number;
-  }): { success: boolean; totalCost?: number; error?: string } {
-    const { fromId, toId, resource, amount } = params;
-
+  }): {
+    success: boolean;
+    error?: string;
+    price?: number;
+  } {
     // Get traders
     const from = this.getTrader(fromId);
     const to = this.getTrader(toId);
@@ -47,157 +37,188 @@ export class TradeService {
       return { success: false, error: "Invalid traders" };
     }
 
-    // Check if trade is possible
-    if (!this.canTrade({ from, to, resource, amount })) {
-      return { success: false, error: "Trade validation failed" };
+    // Determine trade type and price
+    const tradeType = this.getTradeType(from, to);
+    if (!tradeType) {
+      return { success: false, error: "Invalid trade type" };
     }
 
-    // Calculate total cost
-    const price = this.getPrice(from, to, resource);
-    const totalCost = price * amount;
-
-    // Handle credits based on transaction type
-    const transactionType = this.determineTransactionType(from, to);
-
-    switch (transactionType) {
-      case TradeType.Purchase:
-        // Player is buying from station
-        if (!PlayerService.hasSufficientBalance(-totalCost)) {
-          return { success: false, error: "❌ Insufficient credits" };
-        }
-        PlayerService.updateBalance(-totalCost);
-        break;
-
-      case TradeType.Sale:
-        // Player is selling to station
-        PlayerService.updateBalance(totalCost);
-        break;
-    }
-
-    // Execute the resource transfer with actual traders
-    this.transferResource({
+    const price = this.calculatePrice({
       from,
       to,
       resource,
       amount,
+      tradeType,
     });
 
-    return {
-      success: true,
-      totalCost,
-    };
-  }
-
-  /**
-   * Get price for trade operation based on transaction type
-   */
-  private static getPrice(
-    from: Ship | Station,
-    to: Ship | Station,
-    resource: ResourceName
-  ): number {
-    const transactionType = this.determineTransactionType(from, to);
-
-    switch (transactionType) {
-      case TradeType.Purchase:
-        // Player buying from station
-        return (from as Station).resourcePrices[resource].sellPrice;
-
-      case TradeType.Sale:
-        // Player selling to station
-        return (to as Station).resourcePrices[resource].buyPrice;
-
-      case TradeType.Transfer:
-        // Ship to ship trades use base price
-        return BaseResourses[resource].basePrice;
+    // Check player balance for purchases
+    if (
+      tradeType === TradeType.Purchase &&
+      !PlayerService.hasSufficientBalance(price)
+    ) {
+      return { success: false, error: "❌ Insufficient credits" };
     }
+
+    // Validate resource transfer possibility using service methods
+    const canTransfer = this.validateTransfer({ from, to, resource, amount });
+    if (!canTransfer) {
+      return { success: false, error: "Invalid transfer" };
+    }
+
+    // Process payment
+    if (tradeType === TradeType.Purchase) {
+      PlayerService.updateBalance(-price);
+    } else if (tradeType === TradeType.Sale) {
+      PlayerService.updateBalance(price);
+    }
+
+    // Execute transfer
+    this.transferResources({ from, to, resource, amount });
+
+    return { success: true, price };
   }
 
   /**
-   * Check if trade is possible, based on resource availability and cargo size
+   * Validate if transfer is possible using service methods
    */
-  private static canTrade(params: {
+  private static validateTransfer({
+    from,
+    to,
+    resource,
+    amount,
+  }: {
     from: Ship | Station;
     to: Ship | Station;
     resource: ResourceName;
     amount: number;
   }): boolean {
-    const { from, to, resource, amount } = params;
+    // Check if seller has enough resources
+    const fromAmount = isStation(from)
+      ? StationService.getResourceAmount({ stationId: from.id, resource })
+      : FleetService.getResourceAmount({ shipId: from.id, resource });
 
-    // Check if seller has enough resource
-    if (from.resources[resource].amount < amount) {
-      return false;
-    }
+    if (fromAmount < amount) return false;
 
-    // Check if buyer has enough free space
-    // @todo: add cargo size to ship
-    const buyerCurrentCargo = Object.values(to.resources).reduce(
-      (sum, { amount }) => sum + amount,
-      0
-    );
+    // For ships, check cargo space
+    if (!isStation(to)) {
+      const ship = FleetService.getShipById(to.id);
+      if (!ship) return false;
 
-    if ("cargoSize" in to && buyerCurrentCargo + amount > to.cargoSize) {
-      return false;
+      const currentCargo = Object.values(ship.resources).reduce(
+        (sum, { amount }) => sum + amount,
+        0
+      );
+
+      if (currentCargo + amount > ship.cargoSize) return false;
     }
 
     return true;
   }
 
   /**
-   * Transfer resources between traders
+   * Transfer resources using service methods
    */
-  private static transferResource(params: {
+  private static transferResources({
+    from,
+    to,
+    resource,
+    amount,
+  }: {
     from: Ship | Station;
     to: Ship | Station;
     resource: ResourceName;
     amount: number;
   }): void {
-    const { from, to, resource, amount } = params;
-
-    // Update resources using type guard
+    // Remove from seller
     if (isStation(from)) {
-      useStationsStore
-        .getState()
-        .setStationResources(
-          from.id,
-          resource,
-          from.resources[resource].amount - amount
-        );
+      StationService.updateResource({
+        stationId: from.id,
+        resource,
+        amount: -amount,
+      });
     } else {
-      useFleetStore
-        .getState()
-        .setShipCargo(
-          from.id,
-          resource,
-          from.resources[resource].amount - amount
-        );
+      FleetService.updateResource({
+        shipId: from.id,
+        resource,
+        amount: -amount,
+      });
     }
 
+    // Add to buyer
     if (isStation(to)) {
-      useStationsStore
-        .getState()
-        .setStationResources(
-          to.id,
-          resource,
-          to.resources[resource].amount + amount
-        );
+      StationService.updateResource({
+        stationId: to.id,
+        resource,
+        amount,
+      });
     } else {
-      useFleetStore
-        .getState()
-        .setShipCargo(to.id, resource, to.resources[resource].amount + amount);
+      FleetService.updateResource({
+        shipId: to.id,
+        resource,
+        amount,
+      });
     }
   }
 
   /**
-   * Get trader by ID
+   * Get trader (ship or station) by ID
    */
   private static getTrader(id: string): Ship | Station | null {
-    const ship = useFleetStore.getState().getShipById(id);
-    if (ship) return ship;
+    return FleetService.getShipById(id) || StationService.getStationById(id);
+  }
 
-    const station = useStationsStore.getState().getStationById(id);
-    if (station) return station;
+  /**
+   * Determine trade type based on traders
+   */
+  private static getTradeType(
+    from: Ship | Station,
+    to: Ship | Station
+  ): TradeType | null {
+    if (isStation(from) && !isStation(to)) {
+      return TradeType.Purchase; // Player buys from station
+    }
+    if (!isStation(from) && isStation(to)) {
+      return TradeType.Sale; // Player sells to station
+    }
+    if (!isStation(from) && !isStation(to)) {
+      return TradeType.Transfer; // Ship to ship transfer
+    }
+    return null; // Station to station trade not allowed
+  }
 
-    return null;
+  /**
+   * Calculate trade price based on trade type
+   * - Purchase (station -> ship): use station's sellPrice
+   * - Sale (ship -> station): use station's buyPrice
+   * - Transfer (ship -> ship): price is 0
+   */
+  private static calculatePrice({
+    from,
+    to,
+    resource,
+    amount,
+    tradeType,
+  }: {
+    from: Ship | Station;
+    to: Ship | Station;
+    resource: ResourceName;
+    amount: number;
+    tradeType: TradeType;
+  }): number {
+    // Ship to ship transfers are free
+    if (tradeType === TradeType.Transfer) return 0;
+
+    // Find which trader is the station
+    // We know one must be station because tradeType is Purchase or Sale
+    const station = (isStation(from) ? from : to) as Station;
+
+    // If station is seller (Purchase), use sellPrice
+    // If station is buyer (Sale), use buyPrice
+    const price =
+      tradeType === TradeType.Purchase
+        ? station.resourcePrices[resource].sellPrice // Station sells to player
+        : station.resourcePrices[resource].buyPrice; // Station buys from player
+
+    return price * amount;
   }
 }

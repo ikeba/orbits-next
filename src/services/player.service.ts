@@ -32,20 +32,20 @@ export class PlayerService {
   }
 
   /**
-   * Check if player has sufficient balance for transaction
-   * @param amount - Positive for receiving credits, negative for spending
+   * Check if player has sufficient balance for spending
    */
   static hasSufficientBalance(amount: number): boolean {
     const currentCredits = this.getCredits();
-    return currentCredits + amount >= 0;
+    return currentCredits >= amount;
   }
 
   /**
    * Update player's credit balance
-   * @param amount - Positive for receiving credits, negative for spending
+   * Returns false if trying to spend more than available
    */
   static updateBalance(amount: number): boolean {
-    if (!this.hasSufficientBalance(amount)) {
+    // For spending, check if we have enough
+    if (amount < 0 && !this.hasSufficientBalance(Math.abs(amount))) {
       return false;
     }
 

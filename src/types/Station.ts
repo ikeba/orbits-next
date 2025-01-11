@@ -1,6 +1,11 @@
 import { StationPrices, ResourceStorage } from "./Resource";
 
-export type StationType = "industrial" | "agricultural" | "mining";
+export enum StationType {
+  Industrial = "industrial",
+  Agricultural = "agricultural",
+  Mining = "mining",
+}
+
 export interface Station {
   id: string;
   name: string;

@@ -27,8 +27,6 @@ export const useStationsStore = create<StationsState>()((set, get) => ({
     resourceName: ResourceName,
     newAmount: number
   ) => {
-    console.log("Before update:", get().stations);
-
     set((state) => {
       const newState = {
         stations: state.stations.map((station) =>
@@ -47,7 +45,6 @@ export const useStationsStore = create<StationsState>()((set, get) => ({
         ),
       };
 
-      console.log("After update:", newState.stations);
       return newState;
     });
   },

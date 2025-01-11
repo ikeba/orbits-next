@@ -11,7 +11,7 @@ export const defaultScenario: GameScenario = {
   setup: () => {
     useGameStore.getState().setScenario(defaultScenario);
     // 1. Create player
-    PlayerService.createPlayer({ name: "Player", credits: 1000 });
+    PlayerService.createPlayer({ name: "Player", credits: 100 });
 
     // 2. Add base ship
     FleetService.createShip({

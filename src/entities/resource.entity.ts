@@ -5,13 +5,26 @@ import {
   ResourceStorage,
   StationPrices,
 } from "@/types/Resource";
+import { Station, StationType } from "@/types/Station";
 
 const DEFAULT_STATION_RESOURCES = 100;
 const DEFAULT_SHIP_RESOURCES = 0;
 const DEFAULT_STATION_PRICES = {
-  [ResourceName.Water]: { sellPrice: 1, buyPrice: 1 },
-  [ResourceName.Iron]: { sellPrice: 1, buyPrice: 1 },
-  [ResourceName.Hydrogen]: { sellPrice: 1, buyPrice: 1 },
+  [StationType.Industrial]: {
+    [ResourceName.Water]: { sellPrice: 2, buyPrice: 1 },
+    [ResourceName.Iron]: { sellPrice: 2, buyPrice: 1 },
+    [ResourceName.Hydrogen]: { sellPrice: 2, buyPrice: 1 },
+  },
+  [StationType.Agricultural]: {
+    [ResourceName.Water]: { sellPrice: 1, buyPrice: 4 },
+    [ResourceName.Iron]: { sellPrice: 2, buyPrice: 1 },
+    [ResourceName.Hydrogen]: { sellPrice: 2, buyPrice: 1 },
+  },
+  [StationType.Mining]: {
+    [ResourceName.Water]: { sellPrice: 2, buyPrice: 1 },
+    [ResourceName.Iron]: { sellPrice: 2, buyPrice: 1 },
+    [ResourceName.Hydrogen]: { sellPrice: 2, buyPrice: 1 },
+  },
 };
 
 export const BaseResourses: Record<ResourceName, ResourceInfo> = {
@@ -52,11 +65,13 @@ export const createShipResources = (): ResourceStorage => {
   );
 };
 
-export const createStationPrices = (): StationPrices => {
+export const createStationPrices = ({
+  type,
+}: Pick<Station, "type">): StationPrices => {
   return Object.values(ResourceName).reduce(
     (acc, resourceName) => ({
       ...acc,
-      [resourceName]: DEFAULT_STATION_PRICES[resourceName],
+      [resourceName]: DEFAULT_STATION_PRICES[type][resourceName],
     }),
     {} as StationPrices
   );
