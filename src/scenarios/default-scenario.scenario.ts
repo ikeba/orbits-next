@@ -10,7 +10,7 @@ export const defaultScenario: GameScenario = {
   id: "default",
   name: "Default",
   description: "Default scenario",
-  setup: () => {
+  setup: async () => {
     useGameStore.getState().setScenario(defaultScenario);
 
     // 1. Initialize base stations

@@ -9,12 +9,28 @@ interface GameState {
   isRunning: boolean;
   speed: number;
   scenario: GameScenario | null;
+  isInitialized: boolean;
+  error: string | null;
 
+  // Actions
   start: () => void;
   pause: () => void;
+  reset: () => void;
   setSpeed: (speed: number) => void;
   setScenario: (scenario: GameScenario) => void;
+  setInitialized: (initialized: boolean) => void;
+  setError: (error: string | null) => void;
 }
+
+const initialState = {
+  startTime: Date.now(),
+  tick: 0,
+  isRunning: false,
+  speed: 1,
+  scenario: null,
+  isInitialized: false,
+  error: null,
+};
 
 export const useGameStore = create<GameState>((set, get) => {
   const timeSystem = () => {
@@ -23,44 +39,46 @@ export const useGameStore = create<GameState>((set, get) => {
     const newTick = ((currentTime - startTime) / 1000) * speed;
 
     if (Math.abs(newTick - tick) >= 0.1) {
-      set(() => ({
-        tick: newTick,
-      }));
+      set(() => ({ tick: newTick }));
     }
   };
 
   gameLoop.addSystem(GameLoopSystem.Game, timeSystem);
 
-  const start = () => {
-    set({
-      isRunning: true,
-      startTime: Date.now(),
-    });
-    gameLoop.start();
-  };
-
-  const pause = () => {
-    set({ isRunning: false });
-    gameLoop.pause();
-  };
-
-  const setSpeed = (speed: number) => {
-    set({ speed });
-  };
-
-  const setScenario = (scenario: GameScenario) => {
-    set({ scenario });
-  };
-
   return {
-    startTime: Date.now(),
-    tick: 0,
-    isRunning: true,
-    speed: 1,
-    scenario: null,
-    start,
-    pause,
-    setSpeed,
-    setScenario,
+    ...initialState,
+
+    start: () => {
+      set({
+        isRunning: true,
+        startTime: Date.now(),
+      });
+      gameLoop.start();
+    },
+
+    pause: () => {
+      set({ isRunning: false });
+      gameLoop.pause();
+    },
+
+    reset: () => {
+      set(initialState);
+    },
+
+    setSpeed: (speed: number) => {
+      set({ speed });
+    },
+
+    setScenario: (scenario: GameScenario) => {
+      set({ scenario });
+    },
+
+    setInitialized: (initialized: boolean) => {
+      set({ isInitialized: initialized });
+    },
+
+    setError: (error: string | null) => {
+      set({ error });
+    },
   };
 });

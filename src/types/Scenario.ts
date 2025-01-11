@@ -4,7 +4,7 @@ export interface GameScenario {
   id: string;
   name: string;
   description: string;
-  setup: () => void;
+  setup: () => void | Promise<void>;
   initialResources?: Partial<Record<ResourceName, number>>;
   startingCredits?: number;
 }

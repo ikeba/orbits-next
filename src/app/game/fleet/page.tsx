@@ -3,7 +3,7 @@
 import Subheader from "@/components/shared/Subheader";
 import FlexWrap from "@/components/shared/FlexWrap";
 import { useFleetStore } from "@/stores/fleet.store";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import UiList from "@/components/shared/UiList";
 import ShipDetails from "@/components/game/fleet/ShipDetails";
 import { useStationsStore } from "@/stores/stations.store";
@@ -39,6 +39,11 @@ export default function Fleet() {
   const handleSelectShip = (id: string) => {
     selectShip(id);
   };
+
+  useEffect(() => {
+    handleSelectShip(ships[0].id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ships]);
 
   return (
     <div className="tw-h-full">
