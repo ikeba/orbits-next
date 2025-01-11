@@ -1,4 +1,5 @@
 import { FleetService } from "@/services/fleet.service";
+import { PlayerService } from "@/services/player.service";
 import { useGameStore } from "@/stores/game.store";
 import { useStationsStore } from "@/stores/stations.store";
 import { GameScenario } from "@/types/Scenario";
@@ -9,8 +10,8 @@ export const defaultScenario: GameScenario = {
   description: "Default scenario",
   setup: () => {
     useGameStore.getState().setScenario(defaultScenario);
-    // 1. Fill stations with base resources
-    // @todo: Add stations
+    // 1. Create player
+    PlayerService.createPlayer({ name: "Player", credits: 1000 });
 
     // 2. Add base ship
     FleetService.createShip({
