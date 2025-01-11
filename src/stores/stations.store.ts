@@ -1,4 +1,3 @@
-import { BaseStations } from "@/entities/station.entity";
 import { ResourceName } from "@/types/Resource";
 
 import { Station } from "@/types/Station";
@@ -8,6 +7,7 @@ interface StationsState {
   stations: Station[];
 
   getStationById: (id: string) => Station | null;
+  setStations: (stations: Station[]) => void;
   setStationResources: (
     stationId: string,
     resourceName: ResourceName,
@@ -16,7 +16,11 @@ interface StationsState {
 }
 
 export const useStationsStore = create<StationsState>()((set, get) => ({
-  stations: BaseStations,
+  stations: [],
+
+  setStations: (stations: Station[]) => {
+    set({ stations });
+  },
 
   getStationById: (id: string) => {
     return get().stations.find((station) => station.id === id) || null;

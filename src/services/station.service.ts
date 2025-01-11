@@ -1,8 +1,23 @@
 import { Station } from "@/types/Station";
 import { ResourceName } from "@/types/Resource";
+import { ResourceService } from "@/services/resource.service";
+import { getRandomId } from "@/helpers/string.helper";
+
 import { useStationsStore } from "@/stores/stations.store";
+import { BASE_STATIONS_CONFIG } from "@/configs/stations.config";
 
 export class StationService {
+  /**
+   * Initialize base stations in the store
+   */
+  static initializeBaseStations(): void {
+    const baseStations = BASE_STATIONS_CONFIG.map((config) =>
+      this.createStation(config)
+    );
+
+    useStationsStore.getState().setStations(baseStations);
+  }
+
   /**
    * Get station by ID
    * Returns null if station doesn't exist
@@ -100,5 +115,18 @@ export class StationService {
       }),
       {} as Record<ResourceName, number>
     );
+  }
+
+  static createStation({
+    name,
+    type,
+  }: Pick<Station, "name" | "type">): Station {
+    return {
+      id: `station_${name.toLowerCase().replace(/\s+/g, "-")}_${getRandomId()}`,
+      name,
+      type,
+      resources: ResourceService.createStationResources(),
+      resourcePrices: ResourceService.createStationPrices({ type }),
+    };
   }
 }

@@ -1,12 +1,13 @@
 import { Ship } from "@/types/Ship";
 import { ResourceName } from "@/types/Resource";
-import { useFleetStore } from "@/stores/fleet.store";
 import { ShipStatus } from "@/types/Ship";
-import { createShipResources } from "@/entities/resource.entity";
 import { getRandomId, slugify } from "@/helpers/string.helper";
-import { TravelService } from "./travel.service";
 import { GAME_CONFIG } from "@/configs/game.config";
 
+import { TravelService } from "./travel.service";
+import { ResourceService } from "./resource.service";
+
+import { useFleetStore } from "@/stores/fleet.store";
 export class FleetService {
   /**
    * Get ship by ID
@@ -109,7 +110,7 @@ export class FleetService {
       positionId,
       travelId: null,
       cargoSize: GAME_CONFIG.ship.defaultCargoSize,
-      resources: createShipResources(),
+      resources: ResourceService.createShipResources(),
     };
 
     useFleetStore.getState().addShip(ship);
