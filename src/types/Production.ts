@@ -19,24 +19,43 @@ export enum ProductionFacilityType {
   // Advanced resource processing
   // Space: Assembly Line, Chemical Lab
   // Sea: Workshop, Shipyard
-  Manufacturer = "manufacturer",
+  //   Manufacturer = "manufacturer",
 
-  // Complex multi-resource production
-  // Space: Research Lab, Quantum Forge
-  // Sea: Factory, Trading Company
-  Complex = "complex",
+  //   // Complex multi-resource production
+  //   // Space: Research Lab, Quantum Forge
+  //   // Sea: Factory, Trading Company
+  //   Complex = "complex",
+}
+
+export enum ProductionFacilityName {
+  // Extractors (no input or minimal input)
+  WaterExtractor = "WaterExtractor",
+  MiningDrill = "MiningDrill",
 }
 
 /**
  * Production facility instance
  * Represents a single production unit in a location (station/city/port)
  */
+export interface ProductionFacilityInfo {
+  type: ProductionFacilityType;
+  name: ProductionFacilityName;
+  recipe: ProductionRecipe;
+}
+
+export enum ProductionStatus {
+  Idle = "idle",
+  InProgress = "in_progress",
+}
+
 export interface ProductionFacility {
   id: string;
+  name: ProductionFacilityName;
   type: ProductionFacilityType;
-  name: string;
   recipe: ProductionRecipe;
-  progress: number; // Current production progress (0 to 1)
+  progress: number;
+  startTime: number | null;
+  status: ProductionStatus;
 }
 
 /**
@@ -44,23 +63,7 @@ export interface ProductionFacility {
  * Input resources + time = output resources
  */
 export interface ProductionRecipe {
-  input: Record<ResourceName, number>; // Required resources and their amounts
-  output: Record<ResourceName, number>; // Produced resources and their amounts
+  input?: Partial<Record<ResourceName, number>>; // Required resources and their amounts
+  output: Partial<Record<ResourceName, number>>; // Produced resources and their amounts
   cycleTime: number; // Production cycle duration in seconds
 }
-
-// Example usage:
-// const spaceRecipes = {
-//   hydroponics: {
-//     type: ProductionFacilityType.Extractor,
-//     input: { [ResourceName.Water]: 1 },
-//     output: { [ResourceName.Food]: 2 },
-//     cycleTime: 60,
-//   },
-//   refinery: {
-//     type: ProductionFacilityType.Processor,
-//     input: { [ResourceName.Iron]: 2 },
-//     output: { [ResourceName.Steel]: 1 },
-//     cycleTime: 120,
-//   },
-// };

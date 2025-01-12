@@ -17,6 +17,8 @@ class GameLoop {
   addSystem(name: GameLoopSystem, system: system) {
     if (this.systems[name]) return;
 
+    console.log(`Adding game loop system '${name}'`);
+
     this.systems[name] = system;
   }
 

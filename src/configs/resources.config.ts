@@ -7,8 +7,8 @@ export const RESOURCES_CONFIG: Record<ResourceName, ResourceInfo> = {
     category: ResourceCategory.Food,
     basePrice: 1,
   },
-  [ResourceName.Iron]: {
-    name: ResourceName.Iron,
+  [ResourceName.IronOre]: {
+    name: ResourceName.IronOre,
     category: ResourceCategory.Ore,
     basePrice: 1,
   },

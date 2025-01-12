@@ -1,9 +1,9 @@
 import { Ship, ShipStatus } from "@/types/Ship";
 import { Travel, TravelStatus } from "@/types/Travel";
 import { GAME_CONFIG } from "@/configs/game.config";
+import { calculateTimeProgress } from "@/helpers/time.helper";
 
 import { FleetService } from "./fleet.service";
-
 import { useTravelStore } from "@/stores/travel.store";
 
 export class TravelService {
@@ -25,15 +25,13 @@ export class TravelService {
       }
 
       if (travel.status === TravelStatus.InProgress) {
-        // use real time instead of delta
-        const currentTime = Date.now();
-        const elapsedSeconds = (currentTime - travel.startTime) / 1000;
-
-        // Calculate the covered distance based on time
-        const coveredDistance = Math.min(
-          travel.distance,
-          travel.speed * elapsedSeconds
+        const progress = calculateTimeProgress(
+          travel.startTime,
+          travel.distance / travel.speed
         );
+
+        // Calculate the covered distance based on progress
+        const coveredDistance = travel.distance * progress;
 
         // Update only if the change is significant (greater than 1%)
         if (
@@ -43,8 +41,8 @@ export class TravelService {
           updatedTravels.push({ ...travel, coveredDistance });
         }
 
-        // Проверяем завершение
-        if (coveredDistance >= travel.distance) {
+        // Complete travel if reached 100%
+        if (progress >= 1) {
           this.completeTravel(travel);
         }
       }

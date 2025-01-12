@@ -10,3 +10,22 @@ export const formatTickToHhMmSs = (tick: number) => {
 
   return `${paddedHours}:${paddedMinutes}:${paddedSeconds}`;
 };
+
+/**
+ * Calculate elapsed seconds since start time
+ */
+export const getElapsedSeconds = (startTime: number): number => {
+  const currentTime = Date.now();
+  return (currentTime - startTime) / 1000;
+};
+
+/**
+ * Calculate progress based on elapsed time and total time
+ */
+export const calculateTimeProgress = (
+  startTime: number,
+  totalTimeSeconds: number
+): number => {
+  const elapsedSeconds = getElapsedSeconds(startTime);
+  return Math.min(1, elapsedSeconds / totalTimeSeconds);
+};

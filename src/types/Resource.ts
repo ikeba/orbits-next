@@ -14,7 +14,7 @@ export enum ResourceName {
   // food
   Water = "water",
   // ore
-  Iron = "iron",
+  IronOre = "ironOre",
   // fuel
   Hydrogen = "hydrogen",
 }

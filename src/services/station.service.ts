@@ -1,10 +1,15 @@
 import { Station } from "@/types/Station";
 import { ResourceName } from "@/types/Resource";
 import { ResourceService } from "@/services/resource.service";
-import { getRandomId } from "@/helpers/string.helper";
-import { BASE_STATIONS_CONFIG } from "@/configs/stations.config";
+import { getRandomId, slugify } from "@/helpers/string.helper";
+import {
+  BASE_STATIONS_CONFIG,
+  STATION_DEFAULT_FACILITIES,
+} from "@/configs/stations.config";
+import { ProductionService } from "./production.service";
 
 import { useStationsStore } from "@/stores/stations.store";
+import { ProductionFacility } from "@/types/Production";
 
 export class StationService {
   /**
@@ -117,16 +122,42 @@ export class StationService {
     );
   }
 
+  /**
+   * Create new station with default facilities based on type
+   */
   static createStation({
     name,
     type,
   }: Pick<Station, "name" | "type">): Station {
-    return {
-      id: `station_${name.toLowerCase().replace(/\s+/g, "-")}_${getRandomId()}`,
+    const station: Station = {
+      id: `station_${slugify(name)}_${getRandomId()}`,
       name,
       type,
       resources: ResourceService.createStationResources(),
       resourcePrices: ResourceService.createStationPrices({ type }),
+      productionFacilities: [],
     };
+
+    // Add default facilities based on station type
+    const defaultFacilities = STATION_DEFAULT_FACILITIES[type];
+
+    if (defaultFacilities) {
+      defaultFacilities.forEach((facilityName) => {
+        const facility = ProductionService.createFacility(facilityName);
+        station.productionFacilities.push(facility);
+      });
+    }
+
+    return station;
+  }
+
+  static addProductionFacility(
+    stationId: string,
+    facility: ProductionFacility
+  ) {
+    const station = this.getStationById(stationId);
+    if (!station) return;
+
+    useStationsStore.getState().addProductionFacility(stationId, facility);
   }
 }
