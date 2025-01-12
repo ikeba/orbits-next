@@ -6,14 +6,18 @@ import { Station } from "@/types/Station";
 export default function TravelMenu({
   targets,
   onSelect,
+  disabled,
 }: {
   targets: Station[];
   onSelect: (id: string) => void;
+  disabled?: boolean;
 }) {
   return (
     <Menu width={200}>
       <Menu.Target>
-        <Button variant="outline">Travel</Button>
+        <Button variant="outline" size="xs" radius="xs" disabled={disabled}>
+          Travel
+        </Button>
       </Menu.Target>
       <Menu.Dropdown>
         <Menu.Label>Stations</Menu.Label>

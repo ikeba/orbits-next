@@ -12,6 +12,7 @@ interface TravelState {
   setTravelArchive: (travelId: string) => void;
   setTravelStatus: (travelId: string, status: TravelStatus) => void;
   batchUpdateTravels: (updatedTravels: Travel[]) => void;
+  getTravelById: (travelId: string) => Travel | null;
 }
 
 export const useTravelStore = create<TravelState>()((set, get) => {
@@ -45,6 +46,10 @@ export const useTravelStore = create<TravelState>()((set, get) => {
           t.id === travelId ? { ...t, status } : t
         ),
       }));
+    },
+
+    getTravelById: (travelId: string) => {
+      return get().travels.find((t) => t.id === travelId) || null;
     },
 
     batchUpdateTravels: (updatedTravels: Travel[]) => {

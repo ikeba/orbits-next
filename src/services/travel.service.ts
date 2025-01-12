@@ -1,11 +1,13 @@
 import { Ship, ShipStatus } from "@/types/Ship";
 import { Travel, TravelStatus } from "@/types/Travel";
+import { Station } from "@/types/Station";
 import { GAME_CONFIG } from "@/configs/game.config";
 import { calculateTimeProgress } from "@/helpers/time.helper";
 
 import { FleetService } from "./fleet.service";
-import { useTravelStore } from "@/stores/travel.store";
+import { StationService } from "./station.service";
 
+import { useTravelStore } from "@/stores/travel.store";
 export class TravelService {
   /**
    * Function to be used in game loop to update travel progress
@@ -72,6 +74,17 @@ export class TravelService {
   public static getTravelProgress(travel: Travel | undefined): number {
     if (!travel) return 0;
     return Math.round((travel.coveredDistance / travel.distance) * 100);
+  }
+
+  public static getTravelById(travelId: string): Travel | null {
+    return useTravelStore.getState().getTravelById(travelId);
+  }
+
+  public static getTravelTargetStation(travelId: string): Station | null {
+    const travel = this.getTravelById(travelId);
+    if (!travel) return null;
+
+    return StationService.getStationById(travel.toId);
   }
 
   public static canTravel({

@@ -8,6 +8,7 @@ import { TravelService } from "./travel.service";
 import { ResourceService } from "./resource.service";
 
 import { useFleetStore } from "@/stores/fleet.store";
+import { getShipCargoStatus } from "@/helpers/ship.helper";
 
 export class FleetService {
   /**
@@ -64,11 +65,8 @@ export class FleetService {
     if (newAmount < 0) return false;
 
     // Check cargo space
-    const currentCargo = Object.values(ship.resources).reduce(
-      (sum, { amount }) => sum + amount,
-      0
-    );
-    if (currentCargo + amount > ship.cargoSize) return false;
+    const currentCargo = getShipCargoStatus(ship);
+    if (currentCargo.amount + amount > ship.cargoSize) return false;
 
     useFleetStore.getState().setShipCargo(shipId, resource, newAmount);
 
