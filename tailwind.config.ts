@@ -16,6 +16,7 @@ export default {
 
         "o-dark": "#242424",
         "o-darker": "#1d1d1d",
+        "o-primary": "#1971c2",
       },
     },
   },

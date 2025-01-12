@@ -6,5 +6,5 @@ import { useGameStore } from "@/stores/game.store";
 export default function Clock() {
   const { tick } = useGameStore();
 
-  return <div>{formatTickToHhMmSs(tick)}</div>;
+  return <div className="tw-text-xs">{formatTickToHhMmSs(tick)}</div>;
 }

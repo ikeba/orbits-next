@@ -2,7 +2,6 @@ import { Station } from "@/types/Station";
 import { ProductionFacility } from "@/types/Production";
 import { calculateProductionRate } from "@/helpers/production.helper"; // Helper function to calculate production rate
 import FlexWrap from "@/components/shared/FlexWrap";
-import { ResourceName } from "@/types/Resource"; // Импортируем ResourceName
 
 interface ProductionFacilitiesProps {
   station: Station;
@@ -18,7 +17,7 @@ const ProductionFacilities = ({ station }: ProductionFacilitiesProps) => {
         <FlexWrap direction="column" className="tw-space-y-2">
           {station.productionFacilities.map((facility: ProductionFacility) => {
             const productionRate = calculateProductionRate(facility); // Calculate production rate
-            const resourceName = Object.keys(facility.recipe.output)[0]; // Получаем имя производимого ресурса
+            const resourceName = Object.keys(facility.recipe.output)[0];
 
             return (
               <div

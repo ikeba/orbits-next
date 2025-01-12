@@ -8,13 +8,13 @@ export const SaveControls = () => {
 
   return (
     <div className="flex gap-2">
-      <Button onClick={saveGame} variant="subtle">
+      <Button size="xs" onClick={saveGame} variant="subtle">
         Save Game
       </Button>
-      <Button onClick={loadGame} variant="subtle">
+      <Button size="xs" onClick={loadGame} variant="subtle">
         Load Game
       </Button>
-      <Button onClick={resetGame} variant="subtle" color="red">
+      <Button size="xs" onClick={resetGame} variant="subtle" color="red">
         Reset Game
       </Button>
     </div>

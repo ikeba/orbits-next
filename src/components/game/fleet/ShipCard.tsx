@@ -5,9 +5,10 @@ import { Ship } from "@/types/Ship";
 import { useMemo } from "react";
 import TravelMenu from "./TravelMenu";
 import TravelProgress from "../TravelProgress";
-import ShipStatusIcon from "./ShipStatusIcon";
+import ShipStatusIcon from "../../icons/ShipStatusIcon";
 import { TravelService } from "@/services/travel.service";
 import ShipCargoStatus from "./ShipCargoStatus";
+import ShipIcon from "@/components/icons/ShipIcon";
 
 export default function ShipCard({ ship }: { ship: Ship }) {
   const stations = useStationsStore((state) => state.stations);
@@ -32,10 +33,18 @@ export default function ShipCard({ ship }: { ship: Ship }) {
   };
 
   return (
-    <div className="tw-bg-o-darker tw-p-2 tw-rounded-xs tw-border tw-border-white/50 tw-w-[20%]">
+    <div className="tw-bg-o-darker tw-p-2 tw-rounded-xs tw-border tw-border-white/50 tw-w-[20rem]">
       <FlexWrap direction="row" justify="space-between" className="tw-gap-2">
         <FlexWrap direction="column" className="tw-flex-1 tw-gap-1">
-          <div className="tw-text-sm tw-font-bold">{ship.name}</div>
+          <FlexWrap
+            direction="row"
+            align="center"
+            wrap="nowrap"
+            className="tw-gap-1"
+          >
+            <ShipIcon />
+            <div className="tw-text-sm tw-font-bold">{ship.name}</div>
+          </FlexWrap>
           <ShipCargoStatus ship={ship} />
           <FlexWrap
             direction="row"

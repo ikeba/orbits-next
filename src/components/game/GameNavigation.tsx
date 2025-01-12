@@ -1,17 +1,40 @@
 import Link from "next/link";
+import FlexWrap from "../shared/FlexWrap";
+import { Button } from "@mantine/core";
+import { usePathname } from "next/navigation";
 
 export default function GameNavigation() {
+  const pathname = usePathname();
   const linkClasses =
-    "hover:tw-opacity-50 tw-cursor-pointer tw-transition-opacity tw-border-b tw-border-white tw-p-2";
+    "hover:tw-opacity-50 tw-cursor-pointer tw-transition-opacity tw-border-white tw-p-2";
+
+  const isActiveLink = (path: string) => {
+    return pathname === path;
+  };
 
   return (
-    <nav className="tw-flex tw-flex-col tw-border-r tw-border-white tw-h-full">
-      <Link className={linkClasses} href="/game/fleet">
-        Fleet
+    <FlexWrap
+      direction="row"
+      className="tw-w-full tw-border-b tw-border-white tw-p-2 tw-gap-2"
+    >
+      <Link href="/game/fleet">
+        <Button
+          size="xs"
+          variant={isActiveLink("/game/fleet") ? "filled" : "subtle"}
+          className={linkClasses}
+        >
+          Fleet
+        </Button>
       </Link>
-      <Link className={linkClasses} href="/game/map">
-        Map
+      <Link href="/game/map">
+        <Button
+          size="xs"
+          variant={isActiveLink("/game/map") ? "filled" : "subtle"}
+          className={linkClasses}
+        >
+          Map
+        </Button>
       </Link>
-    </nav>
+    </FlexWrap>
   );
 }

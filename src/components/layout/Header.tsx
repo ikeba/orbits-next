@@ -10,13 +10,17 @@ import PlayerCredits from "../player/PlayerCredits";
 export default function Header() {
   return (
     <header className="tw-p-2 tw-border-b tw-border-white">
-      <FlexWrap direction="row" justify="space-between">
+      <FlexWrap direction="row" justify="space-between" align="center">
         <FlexWrap direction="row" align="center" className="tw-gap-2">
           <Link href="/">
-            <Button variant="subtle">Menu</Button>
+            <Button size="xs" variant="subtle">
+              Menu
+            </Button>
           </Link>
           <Link href="/game/fleet">
-            <Button variant="subtle">Game</Button>
+            <Button size="xs" variant="subtle">
+              Game
+            </Button>
           </Link>
           <SaveControls />
         </FlexWrap>

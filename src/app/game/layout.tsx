@@ -3,6 +3,7 @@
 import GameNavigation from "@/components/game/GameNavigation";
 import { GameInitializer } from "@/components/game/GameInitializer";
 import FleetPanel from "@/components/game/panels/FleetPanel";
+import FlexWrap from "@/components/shared/FlexWrap";
 
 export default function GameLayout({
   children,
@@ -11,13 +12,11 @@ export default function GameLayout({
 }) {
   return (
     <GameInitializer>
-      <div className="tw-h-full tw-grid tw-grid-cols-[240px_1fr]">
-        <aside>
-          <GameNavigation />
-        </aside>
-        <div>{children}</div>
+      <FlexWrap direction="column" className="tw-h-full">
+        <GameNavigation />
+        <div className="tw-flex-1">{children}</div>
         <FleetPanel />
-      </div>
+      </FlexWrap>
     </GameInitializer>
   );
 }
