@@ -1,12 +1,12 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import Market from "@/components/game/market/Market";
 import FlexWrap from "@/components/shared/FlexWrap";
 import Subheader from "@/components/shared/Subheader";
 import UiList from "@/components/shared/UiList";
 import { useFleetStore } from "@/stores/fleet.store";
 import { useStationsStore } from "@/stores/stations.store";
+import StationDetails from "@/components/game/station/StationDetails";
 
 export default function Map() {
   const { stations, getStationById } = useStationsStore();
@@ -25,7 +25,7 @@ export default function Map() {
   }, [stations, ships]);
 
   const [selectedStationId, setSelectedStationId] = useState<string | null>(
-    stations[0].id
+    stations[0]?.id || null
   );
 
   const dockedShips = useMemo(() => {
@@ -51,7 +51,10 @@ export default function Map() {
         />
         <div className="tw-h-full tw-w-3/4">
           {selectedStation ? (
-            <Market source={selectedStation} destination={dockedShips?.[0]} />
+            <StationDetails
+              station={selectedStation}
+              dockedShips={dockedShips}
+            />
           ) : (
             <div>Select a station</div>
           )}
